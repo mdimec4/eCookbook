@@ -1,0 +1,33 @@
+{
+    "recepie_id": "37859",
+    "publisher": "Real Simple",
+    "source_url": "http://food2fork.com/view/37859",
+    "title": "Chicken and Gruyre Turnovers",
+    "image_url": "http://static.food2fork.com/chickenturnover2_300e6667e66.jpg",
+    "tags": [
+        "gluten","fish", "vegan"
+    ],
+    "ingredients": [
+      "1 1/2 cups shredded rotisserie chicken",
+      "1 1/2 cups grated Gruyre",
+      "1 cup frozen peas",
+      "2 sheets (one 17.25-ounce package) frozen puff pastry, thawed",
+      "1 large egg, beaten",
+      "1/4 cup Dijon mustard"
+    ],
+    "instructions": [
+	{
+		"number": 1,
+		"image_url": "http://static.food2fork.com/chickenturnover2_300e6667e66.jpg",
+                "instruction": "lorem ipsum sdfgasdgasdfg"
+	},
+        {
+		"number": 2,
+		"image_url": "http://static.food2fork.com/chickenturnover2_300e6667e66.jpg",
+                "instruction": "lorem ipsum sdfgasdgasdfg"
+	}
+    ],
+    "tips": [
+		"tip1", "tip2", "tip3"	
+	    ]
+}
