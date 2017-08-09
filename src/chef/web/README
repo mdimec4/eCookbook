@@ -9,3 +9,5 @@ vue init webpack spa
       npm run dev
 
 npm install vue-router --save
+
+https://scotch.io/tutorials/how-to-build-a-simple-single-page-application-using-vue-2-part-2
