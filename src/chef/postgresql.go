@@ -15,6 +15,31 @@ type PostgresBackend struct {
 	Database *sql.DB
 }
 
+// Register postgres DB back-end in initialization phase
+func init() {
+    RegisterDatabase("postgres", NewPostgresConnectionParams)
+}
+
+// parsePostgresConnParams() will transform string key value pars from 
+// map[strinh]string in to plain string formed as 
+// "key1=val1 key2=val2 ... keyN=valN" 
+func parsePostgresConnParams(params map[string]string) string {
+    str := ""
+    for key, val := range params {
+        // if not the first key val pair in str,
+        // then we need to insert space for separation
+        if str != "" {
+            str += " "
+        }
+        str += fmt.Sprintf("%s=%s", key, val)
+    }
+    return str
+}
+
+func NewPostgresConnectionParams(params map[string]string) (Database, error) {
+    return NewPostgresConnection(parsePostgresConnParams(params))
+}
+
 func NewPostgresConnection(dataSourceName string) (*PostgresBackend, error) {
 	var err error
 	postgresDB := &PostgresBackend{dsn: dataSourceName}

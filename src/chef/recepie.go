@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"hash/crc32"
+	"math/big"
 	"net/http"
 	"os"
 	"time"
@@ -41,7 +42,7 @@ type Recepie struct {
 }
 
 var (
-	postgres *PostgresBackend
+	db Database
 )
 
 var (
@@ -50,38 +51,47 @@ var (
 )
 
 func getRecepie(recepieID string) (Recepie, error) {
-	return postgres.GetRecepie(recepieID)
+	return db.GetRecepie(recepieID)
 }
 
 func getRecepieList() ([]Recepie, error) {
-	return postgres.ListRecepies()
+	return db.ListRecepies()
 }
 
 // update will update the  recepie in database,
 func update(recepie Recepie) error {
-	return postgres.UpdateRecepie(recepie)
+	return db.UpdateRecepie(recepie)
+}
+
+func cryptoRandSecure(max int64) (int64, error) {
+	nBig, err := rand.Int(rand.Reader, big.NewInt(max))
+	if err != nil {
+		return 0, err
+	}
+	return nBig.Int64(), nil
 }
 
 // newRecepy will crete unique ID for recepie,
 // and insert the recepie into the database.
 func newRecepie(recepie Recepie) (string, error) {
 	if recepie.Title == "" {
-		return "", errors.New("Title is not set")
+		return "", errors.New("title is not set")
 	}
 	if recepie.RecepieID == "" {
 		var crc uint32 = crc32.ChecksumIEEE([]byte(recepie.Title))
-		var bArr []byte = make([]byte, 4)
-		rand.Read(bArr)
-		rand32 := uint32(bArr[3])<<24 | uint32(bArr[2])<<16 | uint32(bArr[1])<<8 | uint32(bArr[0])
+		rand, err := cryptoRandSecure(int64(^(uint64(1) << 63)))
+        if err != nil {
+            return "", err
+        }
 		timestamp := time.Now().Unix()
-		recepie.RecepieID = fmt.Sprintf("%x-%x-%x", crc, rand32, timestamp)
+		recepie.RecepieID = fmt.Sprintf("%x-%x-%x", crc, rand, timestamp)
 	}
-	err := postgres.CreateRecepie(recepie)
+	err := db.CreateRecepie(recepie)
 	return recepie.RecepieID, err
 }
 
 func deleteRecepie(id string) error {
-	return postgres.DeleteRecepie(id)
+	return db.DeleteRecepie(id)
 }
 
 func GetRecepiesList(w http.ResponseWriter, r *http.Request) {
@@ -173,13 +183,15 @@ func main() {
 		err error
 	)
 	// TODO use config.json file
-	postgres, err = NewPostgresConnection(
-		fmt.Sprintf("user=%s dbname=%s password=%s sslmode=disable host=%s port=%s", "chef", "cookbook", "chef", "localhost", "5432"))
+    params := map[string]string{"user": "chef", "dbname": "cookbook",
+        "password": "chef", "sslmode": "disable", "host":"localhost",
+        "port": "5432"}
+	db, err = NewDatabaseConnection("postgres", params)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Setting database connection: %s\n", err)
 		os.Exit(1)
 	}
-    // TODO implement authentication
+	// TODO implement authentication
 	router := mux.NewRouter()
 	router.HandleFunc("/api/recepies", GetRecepiesList).Methods("GET")
 	router.HandleFunc("/api/recepies/{id}", GetRecepie).Methods("GET")
