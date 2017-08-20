@@ -18,7 +18,7 @@ type Database interface {
 type registerDbFn func(params map[string]string) (Database, error)
 
 var (
-	databaseBackends map[string]registerDbFn = map[string]registerDbFn{}
+	databaseBackends = map[string]registerDbFn{}
 )
 
 // RegisterDatabase allows DB back-end to register itself as a

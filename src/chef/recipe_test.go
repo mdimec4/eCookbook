@@ -49,7 +49,7 @@ func TestUniqueRecipeID(t *testing.T) {
 	t.Log(id)
 
 	// use regex to match id
-	var crc uint32 = crc32.ChecksumIEEE([]byte(title))
+	var crc = crc32.ChecksumIEEE([]byte(title))
 	r, err := regexp.Compile(fmt.Sprintf("%x-[0-9 a-z].*-[0-9 a-z].*", crc))
 	if err != nil {
 		t.Fatal(err)

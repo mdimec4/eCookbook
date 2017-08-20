@@ -62,20 +62,15 @@ func NewPostgresConnection(dataSourceName string) (*PostgresBackend, error) {
 	return postgresDB, nil
 }
 
-/*
-double insert should yield this:
-ERROR:  duplicate key value violates unique constraint "recipe_recipe_id_key"
-DETAIL:  Key (recipe_id)=(333) already exists.
-*/
 func (postgres *PostgresBackend) CreateRecipe(r Recipe) error {
 	id := r.RecipeID
-	recJson, err := json.Marshal(r)
+	recJSON, err := json.Marshal(r)
 	if err != nil {
 		return err
 	}
 	_, err = postgres.Database.Exec(
 		"INSERT INTO recipe (recipe_id, data) VALUES ($1, $2)",
-		id, string(recJson))
+		id, string(recJSON))
 	if err != nil {
 		if strings.Contains(err.Error(), "duplicate key value violates unique constraint") {
 			fmt.Fprintf(os.Stderr, "CreateRecipe(): %s\n", err)
@@ -89,13 +84,13 @@ func (postgres *PostgresBackend) CreateRecipe(r Recipe) error {
 func (postgres *PostgresBackend) UpdateRecipe(r Recipe) error {
 	var rs sql.Result
 	id := r.RecipeID
-	recJson, err := json.Marshal(r)
+	recJSON, err := json.Marshal(r)
 	if err != nil {
 		return err
 	}
 	rs, err = postgres.Database.Exec(
 		"UPDATE recipe SET data = $2 WHERE recipe_id = $1",
-		id, string(recJson))
+		id, string(recJSON))
 	if err != nil {
 		return err
 	}
@@ -110,14 +105,14 @@ func (postgres *PostgresBackend) UpdateRecipe(r Recipe) error {
 /*
 func (postgres *PostgresBackend) UpdateOrCreateRecipe(r Recipe) error {
 	id := r.RecipeID
-	recJson, err := json.Marshal(r)
+	recJSON, err := json.Marshal(r)
 	if err != nil {
 		return err
 	}
 	_, err = postgres.Database.Exec(`
 		INSERT INTO recipe (recipe_id, data) VALUES ($1, $2)
 		ON CONFLICT (recipe_id) DO UPDATE SET data = excluded.data`,
-		id, string(recJson))
+		id, string(recJSON))
 	if err != nil {
 		return err
 	}
