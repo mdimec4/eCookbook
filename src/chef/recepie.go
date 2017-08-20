@@ -59,7 +59,7 @@ func getRecepieList() ([]Recepie, error) {
 
 // update will update the  recepie in database,
 func update(recepie Recepie) error {
-	return postgres.Update(recepie)
+	return postgres.UpdateRecepie(recepie)
 }
 
 // newRecepy will crete unique ID for recepie,
@@ -81,7 +81,7 @@ func newRecepie(recepie Recepie) (string, error) {
 }
 
 func deleteRecepie(id string) error {
-	return postgres.Delete(id)
+	return postgres.DeleteRecepie(id)
 }
 
 func GetRecepiesList(w http.ResponseWriter, r *http.Request) {
@@ -179,6 +179,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Setting database connection: %s\n", err)
 		os.Exit(1)
 	}
+    // TODO implement authentication
 	router := mux.NewRouter()
 	router.HandleFunc("/api/recepies", GetRecepiesList).Methods("GET")
 	router.HandleFunc("/api/recepies/{id}", GetRecepie).Methods("GET")

@@ -61,7 +61,7 @@ func (postgres *PostgresBackend) CreateRecepie(r Recepie) error {
 	return nil
 }
 
-func (postgres *PostgresBackend) Update(r Recepie) error {
+func (postgres *PostgresBackend) UpdateRecepie(r Recepie) error {
 	var rs sql.Result
 	id := r.RecepieID
 	recJson, err := json.Marshal(r)
@@ -82,6 +82,7 @@ func (postgres *PostgresBackend) Update(r Recepie) error {
 	return nil
 }
 
+/*
 func (postgres *PostgresBackend) UpdateOrCreateRecepie(r Recepie) error {
 	id := r.RecepieID
 	recJson, err := json.Marshal(r)
@@ -97,6 +98,7 @@ func (postgres *PostgresBackend) UpdateOrCreateRecepie(r Recepie) error {
 	}
 	return nil
 }
+*/
 
 func (postgres *PostgresBackend) ListRecepies() ([]Recepie, error) {
 	var (
@@ -152,7 +154,7 @@ func (postgres *PostgresBackend) GetRecepie(recepieID string) (Recepie, error) {
 	return recepie, nil
 }
 
-func (postgres *PostgresBackend) Delete(recepieID string) error {
+func (postgres *PostgresBackend) DeleteRecepie(recepieID string) error {
 	rs, err := postgres.Database.Exec(
 		"DELETE FROM recepie WHERE recepie_id = $1",
 		recepieID)
