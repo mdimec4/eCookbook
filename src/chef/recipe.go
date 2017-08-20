@@ -24,9 +24,9 @@ REST API guides
   https://www.thepolyglotdeveloper.com/2016/07/create-a-simple-restful-api-with-golang/
 */
 
-// Recipe respresents the recipe in database.
+// Recipe represents the recipe in database.
 type Recipe struct {
-	RecipeID    string   `json:"recipe_id"`
+	RecipeID     string   `json:"recipe_id"`
 	Publisher    string   `json:"publisher"`
 	SourceURL    string   `json:"source_url"`
 	Title        string   `json:"title"`
@@ -50,19 +50,6 @@ var (
 	errRecipeExistNot error = errors.New("recipe doesn't exists")
 )
 
-func getRecipe(recipeID string) (Recipe, error) {
-	return db.GetRecipe(recipeID)
-}
-
-func getRecipeList() ([]Recipe, error) {
-	return db.ListRecipes()
-}
-
-// update will update the  recipe in database,
-func update(recipe Recipe) error {
-	return db.UpdateRecipe(recipe)
-}
-
 // generate random number
 func cryptoRandSecure(max int64) (int64, error) {
 	nBig, err := rand.Int(rand.Reader, big.NewInt(max))
@@ -75,34 +62,35 @@ func cryptoRandSecure(max int64) (int64, error) {
 // uniqueRecipeID will generate unique ID using recipe title.
 // And yes title is not the only source of uniqueness,
 // so there can be many recipes with the same title
-func uniqueRecipeID(title string) string {
-}
-
-// newRecepy will crete unique ID for recipe,
-// and insert the recipe into the database.
-func newRecipe(recipe Recipe) (string, error) {
-	if recipe.Title == "" {
+func uniqueRecipeID(title string) (string, error) {
+	if title == "" {
 		return "", errors.New("title is not set")
 	}
+	var crc uint32 = crc32.ChecksumIEEE([]byte(title))
+	rand, err := cryptoRandSecure(int64(^(uint64(1) << 63)))
+	if err != nil {
+		return "", err
+	}
+	timestamp := time.Now().Unix()
+	return fmt.Sprintf("%x-%x-%x", crc, rand, timestamp), nil
+}
+
+// newRecepy will create unique ID for recipe,
+// and insert the recipe into the database.
+func newRecipe(recipe Recipe) (string, error) {
 	if recipe.RecipeID == "" {
-		var crc uint32 = crc32.ChecksumIEEE([]byte(recipe.Title))
-		rand, err := cryptoRandSecure(int64(^(uint64(1) << 63)))
-        if err != nil {
-            return "", err
-        }
-		timestamp := time.Now().Unix()
-		recipe.RecipeID = fmt.Sprintf("%x-%x-%x", crc, rand, timestamp)
+		id, err := uniqueRecipeID(recipe.Title)
+		if err != nil {
+			return "", err
+		}
+		recipe.RecipeID = id
 	}
 	err := db.CreateRecipe(recipe)
 	return recipe.RecipeID, err
 }
 
-func deleteRecipe(id string) error {
-	return db.DeleteRecipe(id)
-}
-
 func GetRecipesList(w http.ResponseWriter, r *http.Request) {
-	l, err := getRecipeList()
+	l, err := db.ListRecipes()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -118,6 +106,24 @@ func GetRecipesList(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetRecipe(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	recipe, err := db.GetRecipe(params["id"])
+	if err != nil {
+		if err == errRecipeExistNot {
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	b, err := json.Marshal(recipe)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	fmt.Println("str ", string(b))
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(b)
 }
 
 func PostNewRecipe(w http.ResponseWriter, r *http.Request) {
@@ -153,7 +159,7 @@ func PutUpdateRecipe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = update(recipe)
+	err = db.UpdateRecipe(recipe)
 	if err != nil {
 		if err == errRecipeExistNot {
 			http.Error(w, err.Error(), http.StatusNotFound)
@@ -172,7 +178,7 @@ func PutUpdateRecipe(w http.ResponseWriter, r *http.Request) {
 
 func DeleteRecipe(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	err := deleteRecipe(params["id"])
+	err := db.DeleteRecipe(params["id"])
 	if err != nil {
 		if err == errRecipeExistNot {
 			http.Error(w, err.Error(), http.StatusNotFound)
@@ -190,9 +196,9 @@ func main() {
 		err error
 	)
 	// TODO use config.json file
-    params := map[string]string{"user": "chef", "dbname": "cookbook",
-        "password": "chef", "sslmode": "disable", "host":"localhost",
-        "port": "5432"}
+	params := map[string]string{"user": "chef", "dbname": "cookbook",
+		"password": "chef", "sslmode": "disable", "host": "localhost",
+		"port": "5432"}
 	db, err = NewDatabaseConnection("postgres", params)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Setting database connection: %s\n", err)

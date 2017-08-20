@@ -34,7 +34,7 @@ func RegisterDatabase(dbBackName string, rdb registerDbFn) error {
 	return nil
 }
 
-// NewDatabaseConnection will initalize database back-end, selected with use of dbBackName parameter.
+// NewDatabaseConnection will initialized database back-end, selected with use of dbBackName parameter.
 // params will be used for DB back-end initialization.
 func NewDatabaseConnection(dbBackName string, params map[string]string) (Database, error) {
 	f, ok := databaseBackends[dbBackName]

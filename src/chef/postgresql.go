@@ -17,27 +17,27 @@ type PostgresBackend struct {
 
 // Register postgres DB back-end in initialization phase
 func init() {
-    RegisterDatabase("postgres", NewPostgresConnectionRegistration)
+	RegisterDatabase("postgres", NewPostgresConnectionRegistration)
 }
 
-// parsePostgresConnParams() will transform string key value pars from 
-// map[strinh]string in to plain string formed as 
-// "key1=val1 key2=val2 ... keyN=valN" 
+// parsePostgresConnParams() will transform string key value pars from
+// map[strinh]string in to plain string formed as
+// "key1=val1 key2=val2 ... keyN=valN"
 func parsePostgresConnParams(params map[string]string) string {
-    str := ""
-    for key, val := range params {
-        // if not the first key val pair in str,
-        // then we need to insert space for separation
-        if str != "" {
-            str += " "
-        }
-        str += fmt.Sprintf("%s=%s", key, val)
-    }
-    return str
+	str := ""
+	for key, val := range params {
+		// if not the first key val pair in str,
+		// then we need to insert space for separation
+		if str != "" {
+			str += " "
+		}
+		str += fmt.Sprintf("%s=%s", key, val)
+	}
+	return str
 }
 
 func NewPostgresConnectionRegistration(params map[string]string) (Database, error) {
-    return NewPostgresConnection(parsePostgresConnParams(params))
+	return NewPostgresConnection(parsePostgresConnParams(params))
 }
 
 func NewPostgresConnection(dataSourceName string) (*PostgresBackend, error) {
@@ -63,7 +63,7 @@ func NewPostgresConnection(dataSourceName string) (*PostgresBackend, error) {
 }
 
 /*
-double insert should yeald this:
+double insert should yield this:
 ERROR:  duplicate key value violates unique constraint "recipe_recipe_id_key"
 DETAIL:  Key (recipe_id)=(333) already exists.
 */
@@ -127,7 +127,7 @@ func (postgres *PostgresBackend) UpdateOrCreateRecipe(r Recipe) error {
 
 func (postgres *PostgresBackend) ListRecipes() ([]Recipe, error) {
 	var (
-		data     string
+		data    string
 		recipe  Recipe
 		recipes []Recipe
 	)
@@ -158,7 +158,7 @@ func (postgres *PostgresBackend) ListRecipes() ([]Recipe, error) {
 
 func (postgres *PostgresBackend) GetRecipe(recipeID string) (Recipe, error) {
 	var (
-		data    string
+		data   string
 		recipe Recipe
 	)
 	row := postgres.Database.QueryRow(
