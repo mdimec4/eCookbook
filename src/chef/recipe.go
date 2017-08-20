@@ -48,6 +48,7 @@ var (
 var (
 	errRecipeExist    error = errors.New("recipe already exists")
 	errRecipeExistNot error = errors.New("recipe doesn't exists")
+    errRecipeTitleNotSet error = errors.New("recipe title is not set")
 )
 
 // generate random number
@@ -64,9 +65,10 @@ func cryptoRandSecure(max int64) (int64, error) {
 // so there can be many recipes with the same title
 func uniqueRecipeID(title string) (string, error) {
 	if title == "" {
-		return "", errors.New("title is not set")
+		return "", errRecipeTitleNotSet
 	}
 	var crc uint32 = crc32.ChecksumIEEE([]byte(title))
+    // get random number. max int64 is the top limit
 	rand, err := cryptoRandSecure(int64(^(uint64(1) << 63)))
 	if err != nil {
 		return "", err
