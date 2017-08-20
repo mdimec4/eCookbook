@@ -30,9 +30,9 @@ func RegisterDatabase(dbBackName string, rdb registerDbFn) error {
 	if rdb == nil {
 		return errors.New("bad DB register function (nil)")
 	}
-    if dbBackName == "" {
+	if dbBackName == "" {
 		return errors.New("bad DB back-end name")
-    }
+	}
 	databaseBackends[dbBackName] = rdb
 	return nil
 }
