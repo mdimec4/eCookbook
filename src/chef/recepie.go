@@ -8,8 +8,7 @@ import (
 	"hash/crc32"
 	"net/http"
 	"os"
-	//"strings"
-	//"unicode"
+	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -24,6 +23,7 @@ REST API guides
   https://www.thepolyglotdeveloper.com/2016/07/create-a-simple-restful-api-with-golang/
 */
 
+// Recepie respresents the recepie in database.
 type Recepie struct {
 	RecepieID    string   `json:"recepie_id"`
 	Publisher    string   `json:"publisher"`
@@ -57,32 +57,24 @@ func getRecepieList() ([]Recepie, error) {
 	return postgres.ListRecepies()
 }
 
+// update will update the  recepie in database,
 func update(recepie Recepie) error {
 	return postgres.Update(recepie)
 }
 
-/*
-func whiteSpaceMap(str string) string {
-	return strings.Map(func(r rune) rune {
-		if unicode.IsSpace(r) {
-			return -1
-		}
-		return r
-	}, str)
-}
-*/
-
+// newRecepy will crete unique ID for recepie,
+// and insert the recepie into the database.
 func newRecepie(recepie Recepie) (string, error) {
 	if recepie.Title == "" {
 		return "", errors.New("Title is not set")
 	}
 	if recepie.RecepieID == "" {
-		var crc1 uint32 = crc32.ChecksumIEEE([]byte(recepie.Title))
+		var crc uint32 = crc32.ChecksumIEEE([]byte(recepie.Title))
 		var bArr []byte = make([]byte, 4)
 		rand.Read(bArr)
-		var num32 uint32 = 0
-		num32 = uint32(bArr[3])<<24 | uint32(bArr[2])<<16 | uint32(bArr[1])<<8 | uint32(bArr[0])
-		recepie.RecepieID = fmt.Sprintf("%x-%x", crc1, num32)
+		rand32 := uint32(bArr[3])<<24 | uint32(bArr[2])<<16 | uint32(bArr[1])<<8 | uint32(bArr[0])
+		timestamp := time.Now().Unix()
+		recepie.RecepieID = fmt.Sprintf("%x-%x-%x", crc, rand32, timestamp)
 	}
 	err := postgres.CreateRecepie(recepie)
 	return recepie.RecepieID, err
@@ -124,8 +116,8 @@ func PostNewRecepie(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//201 Created
-	//Location
+	// 201 Created
+	// Location
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Location", r.URL.Path+"/"+id)
 	w.WriteHeader(http.StatusCreated)
@@ -154,8 +146,8 @@ func PutUpdateRecepie(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//201 Created
-	//Location
+	// 201 Created
+	// Location
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Location", r.URL.Path)
 	w.WriteHeader(http.StatusCreated)
@@ -172,7 +164,7 @@ func DeleteRecepie(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	//204 NoContent
+	// 204 NoContent
 	w.WriteHeader(http.StatusNoContent)
 }
 
@@ -180,7 +172,9 @@ func main() {
 	var (
 		err error
 	)
-	postgres, err = NewPostgresConnection(fmt.Sprintf("user=%s dbname=%s password=%s sslmode=disable host=%s port=%s", "chef", "cookbook", "chef", "localhost", "5432")) //TODO use config.json file
+	// TODO use config.json file
+	postgres, err = NewPostgresConnection(
+		fmt.Sprintf("user=%s dbname=%s password=%s sslmode=disable host=%s port=%s", "chef", "cookbook", "chef", "localhost", "5432"))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Setting database connection: %s\n", err)
 		os.Exit(1)
@@ -191,5 +185,6 @@ func main() {
 	router.HandleFunc("/api/recepies", PostNewRecepie).Methods("POST")
 	router.HandleFunc("/api/recepies/{id}", PutUpdateRecepie).Methods("PUT")
 	router.HandleFunc("/api/recepies/{id}", DeleteRecepie).Methods("DELETE")
-	fmt.Fprintf(os.Stderr, "%v\n", http.ListenAndServe(":4006", router)) //TODO setup from config.json
+	// TODO setup from config.json
+	fmt.Fprintf(os.Stderr, "%v\n", http.ListenAndServe(":4006", router))
 }
