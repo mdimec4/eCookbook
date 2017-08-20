@@ -160,6 +160,6 @@ func TestNewDatabaseConnection(t *testing.T) {
 		t.Error("error was expected")
 	}
 	if err != errRecipeExistNot {
-		t.Error("expected '%s', but got %s", errRecipeExistNot, err)
+		t.Errorf("expected '%s', but got %s", errRecipeExistNot, err)
 	}
 }

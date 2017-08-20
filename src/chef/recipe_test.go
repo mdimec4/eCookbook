@@ -32,7 +32,7 @@ func TestUniqueRecipeID_No_Title(t *testing.T) {
 		return
 	}
 	if err != errRecipeTitleNotSet {
-		t.Error("expected '%s' but got '%s'", errRecipeTitleNotSet, err)
+		t.Errorf("expected '%s' but got '%s'", errRecipeTitleNotSet, err)
 	}
 	if id != "" {
 		t.Error("in case of error empty id is expected")
@@ -55,6 +55,6 @@ func TestUniqueRecipeID(t *testing.T) {
 		t.Fatal(err)
 	}
 	if !r.MatchString(id) {
-		t.Error("'%s' is not in expected format", id)
+		t.Errorf("'%s' is not in expected format", id)
 	}
 }
