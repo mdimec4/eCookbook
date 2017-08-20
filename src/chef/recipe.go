@@ -24,9 +24,9 @@ REST API guides
   https://www.thepolyglotdeveloper.com/2016/07/create-a-simple-restful-api-with-golang/
 */
 
-// Recepie respresents the recepie in database.
-type Recepie struct {
-	RecepieID    string   `json:"recepie_id"`
+// Recipe respresents the recipe in database.
+type Recipe struct {
+	RecipeID    string   `json:"recipe_id"`
 	Publisher    string   `json:"publisher"`
 	SourceURL    string   `json:"source_url"`
 	Title        string   `json:"title"`
@@ -46,23 +46,24 @@ var (
 )
 
 var (
-	errRecepieExist    error = errors.New("recipe already exists")
-	errRecepieExistNot error = errors.New("recipe doesn't exists")
+	errRecipeExist    error = errors.New("recipe already exists")
+	errRecipeExistNot error = errors.New("recipe doesn't exists")
 )
 
-func getRecepie(recepieID string) (Recepie, error) {
-	return db.GetRecepie(recepieID)
+func getRecipe(recipeID string) (Recipe, error) {
+	return db.GetRecipe(recipeID)
 }
 
-func getRecepieList() ([]Recepie, error) {
-	return db.ListRecepies()
+func getRecipeList() ([]Recipe, error) {
+	return db.ListRecipes()
 }
 
-// update will update the  recepie in database,
-func update(recepie Recepie) error {
-	return db.UpdateRecepie(recepie)
+// update will update the  recipe in database,
+func update(recipe Recipe) error {
+	return db.UpdateRecipe(recipe)
 }
 
+// generate random number
 func cryptoRandSecure(max int64) (int64, error) {
 	nBig, err := rand.Int(rand.Reader, big.NewInt(max))
 	if err != nil {
@@ -71,31 +72,37 @@ func cryptoRandSecure(max int64) (int64, error) {
 	return nBig.Int64(), nil
 }
 
-// newRecepy will crete unique ID for recepie,
-// and insert the recepie into the database.
-func newRecepie(recepie Recepie) (string, error) {
-	if recepie.Title == "" {
+// uniqueRecipeID will generate unique ID using recipe title.
+// And yes title is not the only source of uniqueness,
+// so there can be many recipes with the same title
+func uniqueRecipeID(title string) string {
+}
+
+// newRecepy will crete unique ID for recipe,
+// and insert the recipe into the database.
+func newRecipe(recipe Recipe) (string, error) {
+	if recipe.Title == "" {
 		return "", errors.New("title is not set")
 	}
-	if recepie.RecepieID == "" {
-		var crc uint32 = crc32.ChecksumIEEE([]byte(recepie.Title))
+	if recipe.RecipeID == "" {
+		var crc uint32 = crc32.ChecksumIEEE([]byte(recipe.Title))
 		rand, err := cryptoRandSecure(int64(^(uint64(1) << 63)))
         if err != nil {
             return "", err
         }
 		timestamp := time.Now().Unix()
-		recepie.RecepieID = fmt.Sprintf("%x-%x-%x", crc, rand, timestamp)
+		recipe.RecipeID = fmt.Sprintf("%x-%x-%x", crc, rand, timestamp)
 	}
-	err := db.CreateRecepie(recepie)
-	return recepie.RecepieID, err
+	err := db.CreateRecipe(recipe)
+	return recipe.RecipeID, err
 }
 
-func deleteRecepie(id string) error {
-	return db.DeleteRecepie(id)
+func deleteRecipe(id string) error {
+	return db.DeleteRecipe(id)
 }
 
-func GetRecepiesList(w http.ResponseWriter, r *http.Request) {
-	l, err := getRecepieList()
+func GetRecipesList(w http.ResponseWriter, r *http.Request) {
+	l, err := getRecipeList()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -110,17 +117,17 @@ func GetRecepiesList(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-func GetRecepie(w http.ResponseWriter, r *http.Request) {
+func GetRecipe(w http.ResponseWriter, r *http.Request) {
 }
 
-func PostNewRecepie(w http.ResponseWriter, r *http.Request) {
-	var recepie Recepie
-	err := json.NewDecoder(r.Body).Decode(&recepie)
+func PostNewRecipe(w http.ResponseWriter, r *http.Request) {
+	var recipe Recipe
+	err := json.NewDecoder(r.Body).Decode(&recipe)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	id, err := newRecepie(recepie)
+	id, err := newRecipe(recipe)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -133,22 +140,22 @@ func PostNewRecepie(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 }
 
-func PutUpdateRecepie(w http.ResponseWriter, r *http.Request) {
-	var recepie Recepie
-	err := json.NewDecoder(r.Body).Decode(&recepie)
+func PutUpdateRecipe(w http.ResponseWriter, r *http.Request) {
+	var recipe Recipe
+	err := json.NewDecoder(r.Body).Decode(&recipe)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	params := mux.Vars(r)
-	if params["id"] != recepie.RecepieID {
-		http.Error(w, "URL vs. JSON body 'RecepieID' mismatch", http.StatusConflict)
+	if params["id"] != recipe.RecipeID {
+		http.Error(w, "URL vs. JSON body 'RecipeID' mismatch", http.StatusConflict)
 		return
 	}
 
-	err = update(recepie)
+	err = update(recipe)
 	if err != nil {
-		if err == errRecepieExistNot {
+		if err == errRecipeExistNot {
 			http.Error(w, err.Error(), http.StatusNotFound)
 			return
 		}
@@ -163,11 +170,11 @@ func PutUpdateRecepie(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 }
 
-func DeleteRecepie(w http.ResponseWriter, r *http.Request) {
+func DeleteRecipe(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	err := deleteRecepie(params["id"])
+	err := deleteRecipe(params["id"])
 	if err != nil {
-		if err == errRecepieExistNot {
+		if err == errRecipeExistNot {
 			http.Error(w, err.Error(), http.StatusNotFound)
 			return
 		}
@@ -193,11 +200,11 @@ func main() {
 	}
 	// TODO implement authentication
 	router := mux.NewRouter()
-	router.HandleFunc("/api/recepies", GetRecepiesList).Methods("GET")
-	router.HandleFunc("/api/recepies/{id}", GetRecepie).Methods("GET")
-	router.HandleFunc("/api/recepies", PostNewRecepie).Methods("POST")
-	router.HandleFunc("/api/recepies/{id}", PutUpdateRecepie).Methods("PUT")
-	router.HandleFunc("/api/recepies/{id}", DeleteRecepie).Methods("DELETE")
+	router.HandleFunc("/api/recipes", GetRecipesList).Methods("GET")
+	router.HandleFunc("/api/recipes/{id}", GetRecipe).Methods("GET")
+	router.HandleFunc("/api/recipes", PostNewRecipe).Methods("POST")
+	router.HandleFunc("/api/recipes/{id}", PutUpdateRecipe).Methods("PUT")
+	router.HandleFunc("/api/recipes/{id}", DeleteRecipe).Methods("DELETE")
 	// TODO setup from config.json
 	fmt.Fprintf(os.Stderr, "%v\n", http.ListenAndServe(":4006", router))
 }

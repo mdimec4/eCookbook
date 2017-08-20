@@ -8,11 +8,11 @@ import (
 // decide to replace one DB back-end with another.
 // It is also useful for mocking in unit tests.
 type Database interface {
-	CreateRecepie(r Recepie) error
-	UpdateRecepie(r Recepie) error
-	ListRecepies() ([]Recepie, error)
-	GetRecepie(recepieID string) (Recepie, error)
-	DeleteRecepie(recepieID string) error
+	CreateRecipe(r Recipe) error
+	UpdateRecipe(r Recipe) error
+	ListRecipes() ([]Recipe, error)
+	GetRecipe(recipeID string) (Recipe, error)
+	DeleteRecipe(recipeID string) error
 }
 
 type registerDbFn func(params map[string]string) (Database, error)
