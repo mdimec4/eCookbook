@@ -28,8 +28,11 @@ func RegisterDatabase(dbBackName string, rdb registerDbFn) error {
 		return errors.New("database back-end already exists")
 	}
 	if rdb == nil {
-		return errors.New("bad DB register functon (nil)")
+		return errors.New("bad DB register function (nil)")
 	}
+    if dbBackName == "" {
+		return errors.New("bad DB back-end name")
+    }
 	databaseBackends[dbBackName] = rdb
 	return nil
 }
@@ -39,7 +42,7 @@ func RegisterDatabase(dbBackName string, rdb registerDbFn) error {
 func NewDatabaseConnection(dbBackName string, params map[string]string) (Database, error) {
 	f, ok := databaseBackends[dbBackName]
 	if !ok {
-		return nil, errors.New("database backend doesn't exist")
+		return nil, errors.New("database back-end doesn't exist")
 	}
 	return f(params)
 }
