@@ -15,6 +15,8 @@ import About from './components/About'
 import Param from './components/Param'
 // import paramdetails component
 import paramdetails from './components/paramdetails'
+// import RecipeViewer component
+import RecipeViewer from './components/recipe_viewer'
 
 Vue.use(VueRouter)
 const routes = [
@@ -25,7 +27,9 @@ const routes = [
 // oute for the param route of the webpage
 { path: '/param', component: Param },
 // route for the paramdetails passing in params
-{ path: '/Paramdetails/:id', component: paramdetails, name: 'Paramdetails' }
+{ path: '/Paramdetails/:id', component: paramdetails, name: 'Paramdetails' },
+// route for the RecipeView passing in params
+{ path: '/recipe_viewer/:id', component: RecipeViewer, name: 'RecipeViewer' }
 ]
 
 // Create the router instance and pass the `routes` option
