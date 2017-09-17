@@ -1,7 +1,7 @@
 <template>
     <div class="recipe_viewer">
         <h1>{{title}}</h1>
-        <div id="ingredient-list">
+        <div v-if="ingredients" id="ingredient-list">
         <ul>
           <li v-for="ingredient in ingredients">
             {{ ingredient }}
