@@ -1,19 +1,27 @@
 <template>
     <div class="recipe_viewer">
         <h1>{{title}}</h1>
-        <div v-if="ingredients" id="ingredient-list">
-        <ul>
-          <li v-for="ingredient in ingredients">
-            {{ ingredient }}
-          </li>
-        </ul>
-</div>
+        <div v-if="position === 0" id="ingredient-list">
+          <h2>Ingredients</h2>
+          <ul>
+            <li v-for="ingredient in ingredients">
+              {{ ingredient }}
+            </li>
+          </ul>
+        </div>
+        <div v-if="position > 0" id="instructions-view">
+          <h2>Step {{position}} / {{instructions.length}}</h2>
+            <div>
+              {{instructions[position - 1].instruction}}
+            </div>
+        </div>
+        <button v-if="position > 0"v-on:click="prevPage">Back</button>
+        <button v-if="position < instructions.length" v-on:click="nextPage">Next</button>
     </div>
 </template>
 
 
 <script>
-// $rute.params.id
 function getRecipe (id) {
   var jsonStr = `{ 
     "recipe_id": "37859", 
@@ -41,14 +49,14 @@ function getRecipe (id) {
     {
       "number": 2, 
       "image_url": "http://static.food2fork.com/chickenturnover2_300e6667e66.jpg", 
-      "instruction": "lorem ipsum sdfgasdgasdfg" 
+      "instruction": "2 lorem ipsum \\n sdfgasdgasdfgdddddddddddddddddddddddddddddddddddddd miha" 
     }
     ], 
     "tips": [ "tip1", "tip2", "tip3"] 
     }`
   return JSON.parse(jsonStr)
 }
-
+/*
 function sliceArrOfStingsToSets (maxChar, arr) {
   var joinPartialCollection = function (collection, partialCollection) {
     if (partialCollection.length > 0) {
@@ -83,14 +91,28 @@ function sliceArrOfStingsToSets (maxChar, arr) {
   }
   return rec(arr, 0, maxChar, [], 0, [])
 }
+*/
 
 export default {
   name: 'recipe_viewer',
   data () {
     var recipe = getRecipe(this.$route.params.id)
     return {
+      position: 0,
       title: recipe.title,
-      ingredients: sliceArrOfStingsToSets(100, recipe.ingredients)[1]
+      ingredients: recipe.ingredients,
+      instructions: recipe.instructions
+    }
+  },
+  methods: {
+    prevPage: function (event) {
+      if (this.position > 0) {}
+      this.position--
+    },
+    nextPage: function (event) {
+      if (this.position < this.instructions.length) {
+        this.position++
+      }
     }
   }
 }
