@@ -1,27 +1,39 @@
 <template>
-    <div class="recipe_viewer">
-        <h1>{{title}}</h1>
-        <div v-if="position === 0" id="ingredient-list">
-          <h2>Ingredients</h2>
-          <ul>
-            <li v-for="ingredient in ingredients">
-              {{ ingredient }}
-            </li>
-          </ul>
-        </div>
-        <div v-if="position > 0" id="instructions-view">
-          <h2>Step {{position}} / {{instructions.length}}</h2>
-            <div>
-              {{instructions[position - 1].instruction}}
-            </div>
-        </div>
-        <button v-if="position > 0"v-on:click="prevPage">Back</button>
-        <button v-if="position < instructions.length" v-on:click="nextPage">Next</button>
+  <div class="recipe_viewer">
+    <div id="back-next">
+      <button v-if="position > 0"v-on:click="prevPage">Back</button>
+
+      <button v-if="this.scroll != -1" v-on:click="nextPage">Up</button>
+      <button v-if="this.scroll != -1" v-on:click="prevPage">Down</button>
+
+      <button v-if="position < instructions.length" v-on:click="nextPage">Next</button>
     </div>
+    <h1>{{title}}</h1>
+    <div v-if="position === 0" id="ingredient-list">
+      <h2>Ingredients</h2>
+      <div ref="content" id="content">
+        <ul>
+          <li v-for="ingredient in ingredients">
+          {{ ingredient }}
+          </li>
+        </ul>
+      </div>
+    </div>
+      <div v-if="position > 0" id="instructions-view">
+        <h2>Step {{position}} / {{instructions.length}}</h2>
+        <div ref="content" id="content">
+          <div v-for="line in instructions[position - 1].instruction.split('\n')">
+            {{line}}<br>
+          </div>
+        </div>
+    </div>  
+  </div>
 </template>
 
 
 <script>
+// https://stackoverflow.com/questions/40730116/scroll-to-bottom-of-div-with-vue-js
+// https://forum.vuejs.org/t/cant-change-dom-property/13397/2
 function getRecipe (id) {
   var jsonStr = `{ 
     "recipe_id": "37859", 
@@ -49,7 +61,7 @@ function getRecipe (id) {
     {
       "number": 2, 
       "image_url": "http://static.food2fork.com/chickenturnover2_300e6667e66.jpg", 
-      "instruction": "2 lorem ipsum \\n sdfgasdgasdfgdddddddddddddddddddddddddddddddddddddd miha" 
+      "instruction": "2 lorem ipsum sdfsdfgf \\n sdf\\nga\\nsd\\nga\\nsd\\nfg\\ndd\\ndd\\ndddd\\nddd\\ndd\\ndd\\ndd\\nddd\\ndd\\nddddd\\ndddddd\\nddddd\\nmiha" 
     }
     ], 
     "tips": [ "tip1", "tip2", "tip3"] 
@@ -101,7 +113,32 @@ export default {
       position: 0,
       title: recipe.title,
       ingredients: recipe.ingredients,
-      instructions: recipe.instructions
+      instructions: recipe.instructions,
+      scroll: -1
+    }
+  },
+  mounted: function () {
+    this.$nextTick(function () {
+      // Code that will run only after the
+      // entire view has been rendered
+      // XXX this doesnt work
+      this.$refs.content.style.height = (document.body.clientHeight - this.$refs.content.offsetTop).toString()
+    })
+  },
+  updated () { // bug use computed of watcher instead. updated doc says so
+    console.log('updated offsetTop', this.$refs.content.offsetTop)
+    console.log('updated offsetHeight', this.$refs.content.offsetHeight)
+    console.log('updated scrollHeight', this.$refs.content.scrollHeight)
+    console.log('updated scrollTop', this.$refs.content.scrollTop)
+    console.log('updated clientHeight', this.$refs.content.clientHeight)
+    console.log('window.inerHeight', window.innerHeight)
+    console.log('document.body.clientHeight', document.body.clientHeight)
+    if (this.$refs.content.scrollHeight <= this.$refs.content.offsetHeight) {
+      this.scrool = -1
+      return
+    }
+    if (this.scroll === -1) {
+      this.scroll = 0
     }
   },
   methods: {
@@ -118,8 +155,18 @@ export default {
 }
 </script>
 <style>
-.recipe_viewer {
+body {
+  width: 100%;
+  height: 100%;
+}
+#content {
+  -position: fixed;
   text-align: left;
+  overflow: auto;
+  -height: 50vh;
+  -display:table;
 };
+#back-next {
+}
 </style>
 
