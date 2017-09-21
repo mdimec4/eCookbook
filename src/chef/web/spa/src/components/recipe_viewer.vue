@@ -19,13 +19,13 @@
         </ul>
       </div>
     </div>
-      <div v-if="rpage > 0" id="instructions-view">
-        <h2>Step {{rpage}} / {{instructions.length}}</h2>
-        <div ref="content" id="content">
-          <div v-for="line in instructions[rpage - 1].instruction.split('\n')">
-            {{line}}<br>
-          </div>
+    <div v-else-if="rpage > 0" id="instructions-view">
+      <h2>Step {{rpage}} / {{instructions.length}}</h2>
+      <div ref="content" id="content">
+        <div v-for="line in instructions[rpage - 1].instruction.split('\n')">
+         {{line}}<br>
         </div>
+      </div>
     </div>  
   </div>
 </template>
@@ -67,7 +67,7 @@ function getRecipe (id) {
     {
       "number": 3, 
       "image_url": "http://static.food2fork.com/chickenturnover2_300e6667e66.jpg", 
-      "instruction": "3 lorem ipsum sdfsdfgf \\n sdf\\nga\\nsd\\ngasd\\nfg\\ndd\\ndddddd\\nddd\\ndd\\ndd\\ndd\\ndd\\ndddddddd\\ndddddd\\nddddd\\n1223344\\n566778\\n89890-\\n0-\\n646\\n364\\n6346\\n343646\\n3456534\\n6544\\n4444\\n4444444\\n44444\\n44444444444\\n4444444\\n444444\\n444444\\nmiha" 
+      "instruction": "3 lorem ipsum sdfsdfgf lorem ipsum sdfsdfgf \\n sdf\\nga\\nsd\\ngasd\\nfg\\ndd\\ndddddd\\ndddlorem ipsum sdfsdfgf \\n sdf\\nga\\nsd\\ngasd\\nfg\\ndd\\ndddddd\\nddd\\n sdf\\nga\\nsd\\ngasd\\nfg\\ndd\\ndddddd\\nddd\\ndd\\ndd\\ndd\\ndd\\ndddddddd\\ndddddd\\nddddd\\n1223344\\n566778\\n89890-\\n0-\\n646\\n364\\n6346\\n343646\\n3456534\\n6544\\n4444\\n4444444\\n44444\\n44444444444\\n4444444\\n444444\\n444444\\nmiha" 
     }
     ], 
     "tips": [ "tip1", "tip2", "tip3"] 
