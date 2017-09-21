@@ -1,15 +1,15 @@
 <template>
   <div class="recipe_viewer">
     <div id="back-next">
-      <button v-if="position > 0"v-on:click="prevPage">Back</button>
+      <button v-if="rpage > 0"v-on:click="prevPage">Back</button>
 
-      <button v-if="this.scroll != -1" v-on:click="nextPage">Up</button>
-      <button v-if="this.scroll != -1" v-on:click="prevPage">Down</button>
+      <button v-if="this.scroll != -1" v-on:click="scrollUp">Up</button>
+      <button v-if="this.scroll != -1" v-on:click="scrollDown">Down</button>
 
-      <button v-if="position < instructions.length" v-on:click="nextPage">Next</button>
+      <button v-if="rpage < instructions.length" v-on:click="nextPage">Next</button>
     </div>
     <h1>{{title}}</h1>
-    <div v-if="position === 0" id="ingredient-list">
+    <div v-if="rpage === 0" id="ingredient-list">
       <h2>Ingredients</h2>
       <div ref="content" id="content">
         <ul>
@@ -19,10 +19,10 @@
         </ul>
       </div>
     </div>
-      <div v-if="position > 0" id="instructions-view">
-        <h2>Step {{position}} / {{instructions.length}}</h2>
+      <div v-if="rpage > 0" id="instructions-view">
+        <h2>Step {{rpage}} / {{instructions.length}}</h2>
         <div ref="content" id="content">
-          <div v-for="line in instructions[position - 1].instruction.split('\n')">
+          <div v-for="line in instructions[rpage - 1].instruction.split('\n')">
             {{line}}<br>
           </div>
         </div>
@@ -34,6 +34,7 @@
 <script>
 // https://stackoverflow.com/questions/40730116/scroll-to-bottom-of-div-with-vue-js
 // https://forum.vuejs.org/t/cant-change-dom-property/13397/2
+// https://stackoverflow.com/questions/4106538/difference-between-offsetheight-and-clientheight
 function getRecipe (id) {
   var jsonStr = `{ 
     "recipe_id": "37859", 
@@ -61,7 +62,7 @@ function getRecipe (id) {
     {
       "number": 2, 
       "image_url": "http://static.food2fork.com/chickenturnover2_300e6667e66.jpg", 
-      "instruction": "2 lorem ipsum sdfsdfgf \\n sdf\\nga\\nsd\\nga\\nsd\\nfg\\ndd\\ndd\\ndddd\\nddd\\ndd\\ndd\\ndd\\nddd\\ndd\\nddddd\\ndddddd\\nddddd\\nmiha" 
+      "instruction": "2 lorem ipsum sdfsdfgf \\n sdf\\nga\\nsd\\ngasd\\nfg\\ndddddddd\\nddd\\ndd\\ndd\\ndd\\ndddddddddd\\ndddddd\\nddddd\\n1223344\\n566778\\n89890-\\n0-\\n646\\n364\\n6346\\n343646\\n3456534\\n6544\\n4444\\n4444444\\n44444\\n44444444444\\n4444444\\n444444\\n444444\\nmiha" 
     }
     ], 
     "tips": [ "tip1", "tip2", "tip3"] 
@@ -110,7 +111,7 @@ export default {
   data () {
     var recipe = getRecipe(this.$route.params.id)
     return {
-      position: 0,
+      rpage: 0,
       title: recipe.title,
       ingredients: recipe.ingredients,
       instructions: recipe.instructions,
@@ -118,11 +119,17 @@ export default {
     }
   },
   mounted: function () {
+    console.log('mounted')
     this.$nextTick(function () {
+      console.log('mounted - $nextTick')
       // Code that will run only after the
       // entire view has been rendered
       // XXX this doesnt work
-      this.$refs.content.style.height = (document.body.clientHeight - this.$refs.content.offsetTop).toString()
+      // var ce = this.$refs.content
+      // console.log(ce.style.height)
+      // ce.style.height = window.inerHeight - (ce.getBoundingClientRect().top + ce.clientTop + window.getComputedStyle(ce).padingTop)
+      // console.log(ce.style.height)
+      // ce.scrollTop = ce.scrollHeight
     })
   },
   updated () { // bug use computed of watcher instead. updated doc says so
@@ -133,7 +140,8 @@ export default {
     console.log('updated clientHeight', this.$refs.content.clientHeight)
     console.log('window.inerHeight', window.innerHeight)
     console.log('document.body.clientHeight', document.body.clientHeight)
-    if (this.$refs.content.scrollHeight <= this.$refs.content.offsetHeight) {
+    var ce = this.$refs.content
+    if (ce.clientHeight === ce.scrollHeight) {
       this.scrool = -1
       return
     }
@@ -143,28 +151,47 @@ export default {
   },
   methods: {
     prevPage: function (event) {
-      if (this.position > 0) {}
-      this.position--
+      if (this.rpage > 0) {}
+      this.rpage--
     },
     nextPage: function (event) {
-      if (this.position < this.instructions.length) {
-        this.position++
+      if (this.rpage < this.instructions.length) {
+        this.rpage++
+      }
+    },
+    scrollUp: function (event) {
+      var ce = this.$refs.content
+      if (ce.scrollTop > 0) {
+        ce.scrollTop -= ce.clientHeight
+      }
+    },
+    scrollDown: function (event) {
+      var ce = this.$refs.content
+      if (ce.scrollHeight - ce.scrollTop > ce.clientHeight) {
+        ce.scrollTop += ce.clientHeight
       }
     }
   }
 }
 </script>
 <style>
+html {
+	height:100%;
+}
 body {
-  width: 100%;
-  height: 100%;
+color: #000;
+overflow: hidden;
+font-family: 'Sanchez', serif;
+font-size: 120% !important
+
 }
 #content {
-  -position: fixed;
-  text-align: left;
-  overflow: auto;
-  -height: 50vh;
-  -display:table;
+    margin: 0 auto !important;
+    width: auto !important;
+    display: block;
+    overflow: hidden;
+    height: calc(100vh - 354px);
+
 };
 #back-next {
 }
