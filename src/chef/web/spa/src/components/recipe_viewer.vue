@@ -3,8 +3,8 @@
     <div id="back-next">
       <button v-if="rpage > 0"v-on:click="prevPage">Back</button>
 
-      <button v-if="this.scroll != -1" v-on:click="scrollUp">Up</button>
-      <button v-if="this.scroll != -1" v-on:click="scrollDown">Down</button>
+      <button v-if="this.scrollUpShow" v-on:click="scrollUp">Up</button>
+      <button v-if="this.scrollDownShow" v-on:click="scrollDown">Down</button>
 
       <button v-if="rpage < instructions.length" v-on:click="nextPage">Next</button>
     </div>
@@ -62,7 +62,12 @@ function getRecipe (id) {
     {
       "number": 2, 
       "image_url": "http://static.food2fork.com/chickenturnover2_300e6667e66.jpg", 
-      "instruction": "2 lorem ipsum sdfsdfgf \\n sdf\\nga\\nsd\\ngasd\\nfg\\ndddddddd\\nddd\\ndd\\ndd\\ndd\\ndddddddddd\\ndddddd\\nddddd\\n1223344\\n566778\\n89890-\\n0-\\n646\\n364\\n6346\\n343646\\n3456534\\n6544\\n4444\\n4444444\\n44444\\n44444444444\\n4444444\\n444444\\n444444\\nmiha" 
+      "instruction": "2 lorem ipsum sdfsdfgf \\n sdf\\nga\\nsd\\ngasd\\nfg\\ndd\\ndddddd\\nddd\\ndd\\ndd\\ndd\\ndd\\ndddddddd\\ndddddd\\nddddd\\n1223344\\n566778\\n89890-\\n0-\\n646\\n364\\n6346\\n343646\\n3456534\\n6544\\n4444\\n4444444\\n44444\\n44444444444\\n4444444\\n444444\\n444444\\nmiha" 
+    },
+    {
+      "number": 3, 
+      "image_url": "http://static.food2fork.com/chickenturnover2_300e6667e66.jpg", 
+      "instruction": "3 lorem ipsum sdfsdfgf \\n sdf\\nga\\nsd\\ngasd\\nfg\\ndd\\ndddddd\\nddd\\ndd\\ndd\\ndd\\ndd\\ndddddddd\\ndddddd\\nddddd\\n1223344\\n566778\\n89890-\\n0-\\n646\\n364\\n6346\\n343646\\n3456534\\n6544\\n4444\\n4444444\\n44444\\n44444444444\\n4444444\\n444444\\n444444\\nmiha" 
     }
     ], 
     "tips": [ "tip1", "tip2", "tip3"] 
@@ -115,7 +120,8 @@ export default {
       title: recipe.title,
       ingredients: recipe.ingredients,
       instructions: recipe.instructions,
-      scroll: -1
+      scrollUpShow: false,
+      scrollDownShow: false
     }
   },
   mounted: function () {
@@ -130,9 +136,11 @@ export default {
       // ce.style.height = window.inerHeight - (ce.getBoundingClientRect().top + ce.clientTop + window.getComputedStyle(ce).padingTop)
       // console.log(ce.style.height)
       // ce.scrollTop = ce.scrollHeight
+      this.renderScroll()
     })
   },
   updated () { // bug use computed of watcher instead. updated doc says so
+    console.log('updated')
     console.log('updated offsetTop', this.$refs.content.offsetTop)
     console.log('updated offsetHeight', this.$refs.content.offsetHeight)
     console.log('updated scrollHeight', this.$refs.content.scrollHeight)
@@ -140,35 +148,62 @@ export default {
     console.log('updated clientHeight', this.$refs.content.clientHeight)
     console.log('window.inerHeight', window.innerHeight)
     console.log('document.body.clientHeight', document.body.clientHeight)
-    var ce = this.$refs.content
-    if (ce.clientHeight === ce.scrollHeight) {
-      this.scrool = -1
-      return
-    }
-    if (this.scroll === -1) {
-      this.scroll = 0
-    }
+    this.$nextTick(function () {
+      console.log('updated - $nextTick')
+      this.renderScroll()
+    })
   },
   methods: {
     prevPage: function (event) {
-      if (this.rpage > 0) {}
-      this.rpage--
+      if (this.rpage > 0) {
+        this.$refs.content.scrollTop = 0
+        this.rpage--
+      }
     },
     nextPage: function (event) {
       if (this.rpage < this.instructions.length) {
+        this.$refs.content.scrollTop = 0
         this.rpage++
+      }
+    },
+    renderScroll: function () {
+      var ce = this.$refs.content
+      if (ce.clientHeight === ce.scrollHeight) {
+        this.scrollUpShow = false
+        this.scrollDownShow = false
+        return
+      }
+      if (ce.scrollHeight - ce.scrollTop > ce.clientHeight) {
+        this.scrollDownShow = true
+      } else {
+        this.scrollDownShow = false
+      }
+      if (ce.scrollTop > 0) {
+        this.scrollUpShow = true
+      } else {
+        this.scrollUpShow = false
       }
     },
     scrollUp: function (event) {
       var ce = this.$refs.content
       if (ce.scrollTop > 0) {
-        ce.scrollTop -= ce.clientHeight
+        var newScroll = ce.scrollTop - ce.clientHeight
+        if (newScroll < 0) {
+          newScroll = 0
+        }
+        ce.scrollTop = newScroll
+        this.renderScroll()
       }
     },
     scrollDown: function (event) {
       var ce = this.$refs.content
       if (ce.scrollHeight - ce.scrollTop > ce.clientHeight) {
-        ce.scrollTop += ce.clientHeight
+        var newScroll = ce.scrollTop + ce.clientHeight
+        if (newScroll > ce.scrollHeight) {
+          newScroll = ce.scrollHeight
+        }
+        ce.scrollTop = newScroll
+        this.renderScroll()
       }
     }
   }
