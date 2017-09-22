@@ -268,14 +268,17 @@ body {
 color: #000;
 overflow: hidden;
 font-family: 'Sanchez', serif;
-font-size: 120% !important
+font-size: 120%;
 
 }
 #content {
-    margin: 0 auto !important;
-    width: auto !important;
+    text-align: left;
+    /* margin: 0px; */
+    /* padding: 0px; */
+    /* border-width: 0px; */
     display: block;
     overflow: hidden;
+    width: 100vw;
     height: calc(100vh - 354px);
 
 };
