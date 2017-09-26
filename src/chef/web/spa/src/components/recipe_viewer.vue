@@ -237,13 +237,13 @@ export default {
     },
     scrollUp: function (event) {
       var ce = this.$refs.content
-      var fontSize = ce.firstChild.clientHeight
+      var lineHeight = ce.firstChild.clientHeight
       // in case of ui we want to go one level deeper
       if (ce.childNodes[0].nodeName === 'UL') {
-        fontSize = ce.childNodes[0].childNodes[0].clientHeight
+        lineHeight = ce.childNodes[0].childNodes[0].clientHeight
       }
       if (ce.scrollTop > 0) {
-        var newScroll = ce.scrollTop - (Math.floor(ce.clientHeight / fontSize) * fontSize)
+        var newScroll = ce.scrollTop - (Math.floor(ce.clientHeight / lineHeight) * lineHeight)
 
         if (newScroll < 0) {
           newScroll = 0
@@ -254,16 +254,16 @@ export default {
     },
     scrollDown: function (event) {
       var ce = this.$refs.content
-      var fontSize = ce.childNodes[0].clientHeight
+      var lineHeight = ce.childNodes[0].clientHeight
       // in case of ui we want to go one level deeper
       if (ce.childNodes[0].nodeName === 'UL') {
-        fontSize = ce.childNodes[0].childNodes[0].clientHeight
+        lineHeight = ce.childNodes[0].childNodes[0].clientHeight
       }
-      console.log('1 fs ', fontSize)
+      console.log('1 fs ', lineHeight)
       if (ce.scrollHeight - ce.scrollTop > ce.clientHeight) {
         var newScroll = ce.scrollTop + ce.clientHeight
-        // make scroll multiple of fontSize
-        newScroll = Math.floor(newScroll / fontSize) * fontSize
+        // make scroll multiple of lineHeight
+        newScroll = Math.floor(newScroll / lineHeight) * lineHeight
         if (newScroll > (ce.scrollHeight - ce.clientHeight)) {
           newScroll = ce.scrollHeight - ce.clientHeight
         }
