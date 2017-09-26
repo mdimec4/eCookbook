@@ -75,7 +75,7 @@ function getRecipe (id) {
     {
       "number": 3, 
       "image_url": "http://static.food2fork.com/chickenturnover2_300e6667e66.jpg", 
-      "instruction": "1-3 lorem ipsum sdfsdfgf lorem ipsum sdfsdfgf\\n2-sdf\\n3-ga\\n4-sd\\n5-gasd\\n-6fg\\n7-dd\\n-8dddddd\\n-9dddlorem ipsum sdfsdfgf \\n10- sdf\\n11-ga\\n12-sd\\n13-gasd\\n14-fg\\n15-dd\\n16-dddddd\\n17-ddd\\n18- sdf\\n19-ga\\n20-sd\\n21-gasd\\n22-fg\\n23-dd\\n24-dddddd\\n25-ddd\\n26-dd\\n27-dd\\n28-dd\\n29-dd\\n30-dddddddd\\n31-dddddd\\n32-dd\\n33-d\\n34-d\\n35-d\\n36-12\\n37-23\\n38-34\\n39-4\\n40-566\\n41-778\\n42-89\\n843-90-\\n44-0-\\n45-646\\n46-364\\n47-6346\\n48-3436\\n49-46\\n50-3456534\\n51-6544\\n52-4444\\n53-44\\n54-4\\n55-4\\n56-4\\n57-4\\n58-4\\n59-44444\\n60-44444444444\\n51-4444444\\n62-444444\\n63-444444\\n64-miha" 
+      "instruction": "1-3 lorem ipsum sdfsdfgf lorem ipsum sdfsdfgf\\n2-sdf\\n3-ga\\n4-sd\\n5-gasd\\n-6fg\\n7-dd\\n-8dddddd\\n-9dddlorem ipsum sdfsdfgf \\n10- sdf\\n11-ga\\n12-sd\\n13-gasd\\n14-fg\\n15-dd\\n16-dddddd\\n17-ddd\\n18- sdf\\n19-ga\\n20-sd\\n21-gasd\\n22-fg\\n23-dd\\n24-dddddd\\n25-ddd\\n26-dd\\n27-dd\\n28-dd\\n29-dd\\n30-dddddddd\\n31-dddddd\\n32-dd\\n33-d\\n34-d\\n35-d\\n36-12\\n37-23\\n38-34\\n39-4\\n40-566\\n41-778\\n42-89\\n843-90-\\n44-0-\\n45-646\\n46-364\\n47-6346\\n48-3436\\n49-46\\n50-3456534\\n51-6544\\n52-4444\\n53-44\\n54-4\\n55-4\\n56-4\\n57-4\\n58-4\\n59-44444\\n60-44444444444\\n61-4444444\\n62-444444\\n63-444444\\n64-miha" 
     }
     ], 
     "tips": [ "tip1", "tip2", "tip3"] 
@@ -237,8 +237,14 @@ export default {
     },
     scrollUp: function (event) {
       var ce = this.$refs.content
+      var fontSize = ce.firstChild.clientHeight
+      // in case of ui we want to go one level deeper
+      if (ce.childNodes[0].nodeName === 'UL') {
+        fontSize = ce.childNodes[0].childNodes[0].clientHeight
+      }
       if (ce.scrollTop > 0) {
-        var newScroll = ce.scrollTop - ce.clientHeight
+        var newScroll = ce.scrollTop - (Math.floor(ce.clientHeight / fontSize) * fontSize)
+
         if (newScroll < 0) {
           newScroll = 0
         }
@@ -248,10 +254,18 @@ export default {
     },
     scrollDown: function (event) {
       var ce = this.$refs.content
+      var fontSize = ce.childNodes[0].clientHeight
+      // in case of ui we want to go one level deeper
+      if (ce.childNodes[0].nodeName === 'UL') {
+        fontSize = ce.childNodes[0].childNodes[0].clientHeight
+      }
+      console.log('1 fs ', fontSize)
       if (ce.scrollHeight - ce.scrollTop > ce.clientHeight) {
         var newScroll = ce.scrollTop + ce.clientHeight
-        if (newScroll > ce.scrollHeight) {
-          newScroll = ce.scrollHeight
+        // make scroll multiple of fontSize
+        newScroll = Math.floor(newScroll / fontSize) * fontSize
+        if (newScroll > (ce.scrollHeight - ce.clientHeight)) {
+          newScroll = ce.scrollHeight - ce.clientHeight
         }
         ce.scrollTop = newScroll
         this.renderScroll()
@@ -273,9 +287,9 @@ font-size: 120%;
 }
 #content {
     text-align: left;
-    /* margin: 0px; */
-    /* padding: 0px; */
-    /* border-width: 0px; */
+    margin: 0px;
+    padding: 0px;
+    border-width: 0px;
     display: block;
     overflow: hidden;
     width: 100vw;
