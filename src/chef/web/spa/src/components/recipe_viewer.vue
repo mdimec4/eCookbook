@@ -1,10 +1,11 @@
 <template>
   <div class="recipe_viewer">
     <div id="back-next">
-      <button v-if="this.rPagePrevShow"v-on:click="prevPage">Back</button>
-      <button v-if="this.scrollUpShow" v-on:click="scrollUp">Up</button>
-      <button v-if="this.scrollDownShow" v-on:click="scrollDown">Down</button>
-      <button v-if="this.rPageNextShow" v-on:click="nextPage">Next</button>
+      <span><icon scale=2 name="home"></icon></span>
+      <span v-if="this.rPagePrevShow" v-on:click="prevPage"><icon scale=2 name="arrow-left"></icon></span>
+      <span v-if="this.scrollUpShow" v-on:click="scrollUp"><icon scale=2 name="arrow-up"></icon></span>
+      <span v-if="this.scrollDownShow" v-on:click="scrollDown"><icon scale=2 name="arrow-down"></icon></span>
+      <span v-if="this.rPageNextShow" v-on:click="nextPage"><icon scale=2 name="arrow-right"></icon></span>
     </div>
     <h1>{{title}}</h1>
     <div v-if="rwhat==='ingredients'" id="ingredient-list">
@@ -297,6 +298,15 @@ font-size: 120%;
 
 };
 #back-next {
+}
+#logo .fa-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+figure .fa-icon {
+  display: block;
 }
 </style>
 

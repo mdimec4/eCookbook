@@ -18,6 +18,11 @@ import paramdetails from './components/paramdetails'
 // import RecipeViewer component
 import RecipeViewer from './components/recipe_viewer'
 
+import 'vue-awesome/icons'
+import Icon from 'vue-awesome/components/Icon'
+
+Vue.component('icon', Icon)
+
 Vue.use(VueRouter)
 const routes = [
 // define the root url of the application.
