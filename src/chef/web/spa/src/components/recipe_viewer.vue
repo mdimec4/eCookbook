@@ -22,24 +22,26 @@
       <h2>Tips</h2>
     </div>
 
-    <div v-if="rwhat==='ingredients'" ref="content" id="content">
-      <ul>
-        <li v-for="ingredient in ingredients">
-         {{ ingredient }}
-        </li>
-      </ul>
-    </div>
-    <div v-else-if="rwhat==='instructions'" ref="content" id="content">
-      <div v-for="line in instructions[instPage].instruction.split('\n')">
-        {{line}}<br>
+    <div ref="content" id="content"> 
+      <div v-if="rwhat==='ingredients'">
+        <ul ref="textSizeHelp">
+          <li v-for="ingredient in ingredients">
+            {{ ingredient }}
+          </li>
+        </ul>
       </div>
-    </div>
-    <div v-else-if="rwhat==='tips'" ref="content" id="content">
-      <ul>
-        <li v-for="tip in tips">
-          {{ tip }}
-        </li>
-      </ul>
+      <div v-else-if="rwhat==='instructions'" ref="textSizeHelp">
+        <div v-for="line in instructions[instPage].instruction.split('\n')">
+          {{line}}<br>
+        </div>
+      </div>
+      <div v-else-if="rwhat==='tips'">
+        <ul ref="textSizeHelp">
+          <li v-for="tip in tips">
+            {{ tip }}
+          </li>
+        </ul>
+      </div>
     </div>
 
     <div id="position-info-container">
@@ -249,10 +251,10 @@ export default {
     },
     scrollUp: function (event) {
       var ce = this.$refs.content
-      var lineHeight = ce.firstChild.clientHeight
-      // in case of ui we want to go one level deeper
-      if (ce.childNodes[0].nodeName === 'UL') {
-        lineHeight = ce.childNodes[0].childNodes[0].clientHeight
+      var lineHeight = 1
+      // read text line height
+      if (this.$refs.textSizeHelp.childNode[0] !== undefined) {
+        lineHeight = this.$refs.textSizeHelp.childNode[0].clientHeight
       }
       if (ce.scrollTop > 0) {
         var newScroll = ce.scrollTop - (Math.floor(ce.clientHeight / lineHeight) * lineHeight)
@@ -266,10 +268,10 @@ export default {
     },
     scrollDown: function (event) {
       var ce = this.$refs.content
-      var lineHeight = ce.childNodes[0].clientHeight
-      // in case of ui we want to go one level deeper
-      if (ce.childNodes[0].nodeName === 'UL') {
-        lineHeight = ce.childNodes[0].childNodes[0].clientHeight
+      var lineHeight = 1
+      // read text line height
+      if (this.$refs.textSizeHelp.childNode[0] !== undefined) {
+        lineHeight = this.$refs.textSizeHelp.childNode[0].clientHeight
       }
       console.log('1 fs ', lineHeight)
       if (ce.scrollHeight - ce.scrollTop > ce.clientHeight) {
