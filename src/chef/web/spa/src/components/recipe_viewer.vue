@@ -36,6 +36,11 @@
         </ul>
       </div>
     </div>
+    <div id="position-info-container">
+      <div class="position-info">page 3/6</div>
+      <div class="position-info">supbapge position 1/7</div>
+      <div class="position-info">continue...</div>
+    </div>
   </div>
 </template>
 
@@ -294,19 +299,32 @@ font-size: 120%;
     display: block;
     overflow: hidden;
     width: 100vw;
-    height: calc(100vh - 354px);
+    height: calc(100vh - 300px);
 
 };
 #back-next {
 }
-#logo .fa-icon {
+#position-info-container {
+  margin: 0px;
+  padding: 0px;
+  border: solid;
+  border-width: 1px 1px 1px 0px;
+  border-color:black;
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-figure .fa-icon {
-  display: block;
-}
+  left: 0px;
+  bottom: 0px;
+  width: 100vw;
+
+};
+.position-info {
+  float:left;
+  margin: 0px;
+  padding: 0px;
+  border: solid;
+  border-width: 0px 0px 0px 1px;
+  border-color:black;
+  width: calc(33.33% - 1px); /* subtract 1px border width */
+
+};
 </style>
 
