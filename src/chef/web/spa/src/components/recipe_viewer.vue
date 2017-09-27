@@ -1,41 +1,47 @@
 <template>
   <div class="recipe_viewer">
-    <div id="back-next">
+    <div id="back-next-home">
       <span><icon scale=2 name="home"></icon></span>
       <span v-if="this.rPagePrevShow" v-on:click="prevPage"><icon scale=2 name="arrow-left"></icon></span>
       <span v-if="this.scrollUpShow" v-on:click="scrollUp"><icon scale=2 name="arrow-up"></icon></span>
       <span v-if="this.scrollDownShow" v-on:click="scrollDown"><icon scale=2 name="arrow-down"></icon></span>
       <span v-if="this.rPageNextShow" v-on:click="nextPage"><icon scale=2 name="arrow-right"></icon></span>
     </div>
-    <h1>{{title}}</h1>
-    <div v-if="rwhat==='ingredients'" id="ingredient-list">
+  
+    <div id="title">
+      <h1>{{title}}</h1>
+    </div>
+
+    <div v-if="rwhat==='ingredients'" id="subtitle">
       <h2>Ingredients</h2>
-      <div ref="content" id="content">
-        <ul>
-          <li v-for="ingredient in ingredients">
-          {{ ingredient }}
-          </li>
-        </ul>
-      </div>
     </div>
-    <div v-else-if="rwhat==='instructions'" id="instructions-view">
+    <div v-else-if="rwhat==='instructions'" id="subtitle">
       <h2>Step {{instPage+1}} / {{instructions.length}}</h2>
-      <div ref="content" id="content">
-        <div v-for="line in instructions[instPage].instruction.split('\n')">
-         {{line}}<br>
-        </div>
-      </div>
     </div>
-    <div v-else-if="rwhat==='tips'" id="tips-view">
+    <div v-else-if="rwhat==='tips'" id="subtitle">
       <h2>Tips</h2>
-      <div ref="content" id="content">
-        <ul>
-          <li v-for="tip in tips">
-            {{ tip }}
-          </li>
-        </ul>
+    </div>
+
+    <div v-if="rwhat==='ingredients'" ref="content" id="content">
+      <ul>
+        <li v-for="ingredient in ingredients">
+         {{ ingredient }}
+        </li>
+      </ul>
+    </div>
+    <div v-else-if="rwhat==='instructions'" ref="content" id="content">
+      <div v-for="line in instructions[instPage].instruction.split('\n')">
+        {{line}}<br>
       </div>
     </div>
+    <div v-else-if="rwhat==='tips'" ref="content" id="content">
+      <ul>
+        <li v-for="tip in tips">
+          {{ tip }}
+        </li>
+      </ul>
+    </div>
+
     <div id="position-info-container">
       <div class="position-info">page 3/6</div>
       <div class="position-info">supbapge position 1/7</div>
@@ -302,7 +308,7 @@ font-size: 120%;
     height: calc(100vh - 300px);
 
 };
-#back-next {
+#back-next-home {
 }
 #position-info-container {
   margin: 0px;
