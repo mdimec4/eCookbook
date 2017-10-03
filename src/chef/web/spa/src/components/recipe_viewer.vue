@@ -50,8 +50,7 @@
 
     <div id="position-info-container">
       <div class="position-info">page {{curentPage}}/{{ allPages}}</div>
-      <div class="position-info">supbapge position 1/7</div>
-      <div class="position-info">continue...</div>
+      <div class="position-info">supbapge position {{subpagePosition}}</div>
     </div>
   </div>
 </template>
@@ -152,7 +151,8 @@ export default {
       instructions: recipe.instructions,
       tips: recipe.tips,
       scrollUpShow: false,
-      scrollDownShow: false
+      scrollDownShow: false,
+      subpagePosition: '0%'
     }
   },
   computed: {
@@ -198,6 +198,7 @@ export default {
       // console.log(ce.style.height)
       // ce.scrollTop = ce.scrollHeight
       this.renderScroll()
+      this.renderScrollPosition()
     })
   },
   updated () { // bug use computed of watcher instead. updated doc says so
@@ -212,6 +213,7 @@ export default {
     this.$nextTick(function () {
       console.log('updated - $nextTick')
       this.renderScroll() // TODO bug use computed of watcher instead. updated() doc says so
+      this.renderScrollPosition()
     })
   },
   methods: {
@@ -282,6 +284,12 @@ export default {
       } else {
         this.scrollUpShow = false
       }
+    },
+    renderScrollPosition: function () {
+      var ce = this.$refs.content
+      var allSubpages = ce.scrollHeight / ce.clientHeight
+      var subpage = ((ce.scrollTop + ce.clientHeight) / ce.scrollHeight) * allSubpages
+      this.subpagePosition = Math.floor((subpage / allSubpages) * 100).toString() + '%'
     },
     scrollUp: function (event) {
       var ce = this.$refs.content
@@ -373,7 +381,7 @@ font-size: 120%;
   border: solid;
   border-width: 0px 0px 0px 1px;
   border-color:black;
-  width: calc(33.33% - 1px); /* subtract 1px border width */
+  width: calc(50% - 1px); /* subtract 1px border width */
 };
 </style>
 
