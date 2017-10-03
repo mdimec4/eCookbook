@@ -36,7 +36,7 @@
       </div>
       <div v-else-if="rwhat==='instructions'" ref="textSizeHelp">
         <div v-for="line in instructions[instPage].instruction.split('\n')">
-          {{line}}<br>
+          {{line}}
         </div>
       </div>
       <div v-else-if="rwhat==='tips'">
@@ -295,6 +295,11 @@ export default {
 }
 </script>
 <style>
+ * {
+    margin: 0px;
+    padding: 0px;
+    border-width: 0px;
+ }
 html {
 	height:100%;
 }
@@ -303,24 +308,27 @@ color: #000;
 overflow: hidden;
 font-family: 'Sanchez', serif;
 font-size: 120%;
-
+}
+#back-next-home {
+    width: 100vw;
+    height: 5vh
+}
+#title {
+    width: 100vw;
+    height: 15vh
+}
+#subtitle {
+    width: 100vw;
+    height: 10vh
 }
 #content {
     text-align: left;
-    margin: 0px;
-    padding: 0px;
-    border-width: 0px;
     display: block;
     overflow: hidden;
     width: 100vw;
-    height: calc(100vh - 300px);
-
+    height: 65vh
 };
-#back-next-home {
-}
 #position-info-container {
-  margin: 0px;
-  padding: 0px;
   border: solid;
   border-width: 1px 1px 1px 0px;
   border-color:black;
@@ -328,17 +336,14 @@ font-size: 120%;
   left: 0px;
   bottom: 0px;
   width: 100vw;
-
+  height: 5vh
 };
 .position-info {
   float:left;
-  margin: 0px;
-  padding: 0px;
   border: solid;
   border-width: 0px 0px 0px 1px;
   border-color:black;
   width: calc(33.33% - 1px); /* subtract 1px border width */
-
 };
 </style>
 
