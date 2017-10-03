@@ -49,7 +49,7 @@
     </div>
 
     <div id="position-info-container">
-      <div class="position-info">page 3/6</div>
+      <div class="position-info">page {{curentPage}}/{{ allPages}}</div>
       <div class="position-info">supbapge position 1/7</div>
       <div class="position-info">continue...</div>
     </div>
@@ -153,6 +153,36 @@ export default {
       tips: recipe.tips,
       scrollUpShow: false,
       scrollDownShow: false
+    }
+  },
+  computed: {
+    allPages: function () {
+      var count = 0
+      if (this.ingredients) {
+        count++
+      }
+      if (this.instructions) {
+        count += this.instructions.length
+      }
+      if (this.tips) {
+        count++
+      }
+      return count
+    },
+    curentPage: function () {
+      var baseIng = 0
+      if (this.ingredients) {
+        baseIng = 1
+      }
+      switch (this.rwhat) {
+        case 'ingredients':
+          return 1
+        case 'instructions':
+          return baseIng + (this.instPage + 1)
+        case 'tips':
+          return baseIng + (this.instPage + 1) + 1
+      }
+      return -1
     }
   },
   mounted: function () {
