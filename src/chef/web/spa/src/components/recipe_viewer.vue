@@ -3,10 +3,8 @@
     <!-- header buttons -->
     <div id="back-next-home">
       <span><icon scale=2 name="home"></icon></span>
-      <span v-if="this.rPagePrevShow" v-on:click="prevPage"><icon scale=2 name="arrow-left"></icon></span>
-      <span v-if="this.scrollUpShow" v-on:click="scrollUp"><icon scale=2 name="arrow-up"></icon></span>
-      <span v-if="this.scrollDownShow" v-on:click="scrollDown"><icon scale=2 name="arrow-down"></icon></span>
-      <span v-if="this.rPageNextShow" v-on:click="nextPage"><icon scale=2 name="arrow-right"></icon></span>
+      <span v-if="this.rPagePrevShow" v-on:click="buttonBack"><icon scale=2 name="arrow-left"></icon></span>
+      <span v-if="this.rPageNextShow" v-on:click="buttonNext"><icon scale=2 name="arrow-right"></icon></span>
     </div>
   
     <!--title-->
@@ -135,9 +133,9 @@ function sliceArrOfStingsToSets (maxChar, arr) {
   return rec(arr, 0, maxChar, [], 0, [])
 }
 */
-
 export default {
   name: 'recipe_viewer',
+  lastPageChange: '',
   data () {
     var recipe = getRecipe(this.$route.params.id)
     var tmpNextShow = (recipe.instructions != null && recipe.instructions.length > 0) || (recipe.tips != null && recipe.tips.length > 0)
@@ -150,8 +148,6 @@ export default {
       ingredients: recipe.ingredients,
       instructions: recipe.instructions,
       tips: recipe.tips,
-      scrollUpShow: false,
-      scrollDownShow: false,
       subpagePosition: '0%'
     }
   },
@@ -197,7 +193,6 @@ export default {
       // ce.style.height = window.inerHeight - (ce.getBoundingClientRect().top + ce.clientTop + window.getComputedStyle(ce).padingTop)
       // console.log(ce.style.height)
       // ce.scrollTop = ce.scrollHeight
-      this.renderScroll()
       this.renderScrollPosition()
     })
   },
@@ -212,17 +207,41 @@ export default {
     console.log('document.body.clientHeight', document.body.clientHeight)
     this.$nextTick(function () {
       console.log('updated - $nextTick')
-      this.renderScroll() // TODO bug use computed of watcher instead. updated() doc says so
+      var ce = this.$refs.content
+      if (this.lastPageChange === 'next') {
+        this.lastPageChange = ''
+        ce.scrollTop = 0
+      } else if (this.lastPageChange === 'prev') {
+        this.lastPageChange = ''
+        ce.scrollTop = ce.scrollHeight - ce.clientHeight
+      }
       this.renderScrollPosition()
     })
   },
   methods: {
+    buttonNext: function () {
+      var ce = this.$refs.content
+      if (ce.scrollHeight - ce.scrollTop > ce.clientHeight) {
+        this.scrollDown()
+        return
+      }
+      this.nextPage()
+    },
+    buttonBack: function () {
+      var ce = this.$refs.content
+      if (ce.scrollTop > 0) {
+        this.scrollUpShow = true
+        this.scrollUp()
+        return
+      }
+      this.prevPage()
+    },
     prevPage: function (event) {
       switch (this.rwhat) {
         case 'ingredients':
           break
         case 'instructions':
-          this.$refs.content.scrollTop = 0
+          this.lastPageChange = 'prev'
           if (this.instPage > 0) {
             this.instPage--
             this.rPageNextShow = true
@@ -234,7 +253,7 @@ export default {
           }
           break
         case 'tips':
-          this.$refs.content.scrollTop = 0
+          this.lastPageChange = 'prev'
           this.rwhat = 'instructions'
           this.rPagePrevShow = true
           this.rPageNextShow = true
@@ -244,19 +263,20 @@ export default {
     nextPage: function (event) {
       switch (this.rwhat) {
         case 'ingredients':
-          this.$refs.content.scrollTop = 0
+          this.lastPageChange = 'next'
           this.rwhat = 'instructions'
           this.rPagePrevShow = true
           this.rPageNextShow = (this.instructions != null && this.instructions.length > 0) || (this.tips != null && this.tips.length > 0)
           break
         case 'instructions':
-          this.$refs.content.scrollTop = 0
           if (this.instPage + 1 < (this.instructions.length)) {
+            this.lastPageChange = 'next'
             this.instPage++
             this.rPageNextShow = (this.instPage + 1 < ((this.instructions.length))) || (this.tips != null && this.tips.length > 0)
             this.rPagePrevShow = true
           } else {
             if (this.tips != null && this.tips.length > 0) {
+              this.lastPageChange = 'next'
               this.rwhat = 'tips'
               this.rPagePrevShow = true
               this.rPageNextShow = false
@@ -265,24 +285,6 @@ export default {
           break
         case 'tips':
           break
-      }
-    },
-    renderScroll: function () {
-      var ce = this.$refs.content
-      if (ce.clientHeight === ce.scrollHeight) {
-        this.scrollUpShow = false
-        this.scrollDownShow = false
-        return
-      }
-      if (ce.scrollHeight - ce.scrollTop > ce.clientHeight) {
-        this.scrollDownShow = true
-      } else {
-        this.scrollDownShow = false
-      }
-      if (ce.scrollTop > 0) {
-        this.scrollUpShow = true
-      } else {
-        this.scrollUpShow = false
       }
     },
     renderScrollPosition: function () {
@@ -306,7 +308,7 @@ export default {
           newScroll = 0
         }
         ce.scrollTop = newScroll
-        this.renderScroll()
+        this.renderScrollPosition()
       }
     },
     scrollDown: function (event) {
@@ -326,7 +328,7 @@ export default {
           newScroll = ce.scrollHeight - ce.clientHeight
         }
         ce.scrollTop = newScroll
-        this.renderScroll()
+        this.renderScrollPosition()
       }
     }
   }
