@@ -87,7 +87,7 @@ function getRecipe (id) {
     {
       "number": 2, 
       "image_url": "http://static.food2fork.com/chickenturnover2_300e6667e66.jpg", 
-      "instruction": "2 lorem ipsum sdfsdfgf \\n sdf\\nga\\nsd\\ngasd\\nfg\\ndd\\ndddddd\\nddd\\ndd\\ndd\\ndd\\ndd\\ndddddddd\\ndddddd\\nddddd\\n1223344\\n566778\\n89890-\\n0-\\n646\\n364\\n6346\\n343646\\n3456534\\n6544\\n4444\\n4444444\\n44444\\n44444444444\\n4444444\\n444444\\n444444\\nmiha" 
+      "instruction": "2 lorem ipsum sdfs<br>dfgf \\n sdf\\nga\\nsd\\ngasd\\nfg\\ndd\\ndddddd\\nddd\\ndd\\ndd\\ndd\\ndd\\ndddddddd\\ndddddd\\nddddd\\n1223344\\n566778\\n89890-\\n0-\\n646\\n364\\n6346\\n343646\\n3456534\\n6544\\n4444\\n4444444\\n44444\\n44444444444\\n4444444\\n444444\\n444444\\nmiha" 
     },
     {
       "number": 3, 
@@ -360,6 +360,7 @@ font-size: 120%;
     height: 10vh
 }
 #content {
+    padding-left: 5vw;
     text-align: left;
     display: block;
     overflow: hidden;
