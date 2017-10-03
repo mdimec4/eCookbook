@@ -257,9 +257,9 @@ export default {
       var ce = this.$refs.content
       var lineHeight = 1
       // read text line height
-      console.log(this.$refs.textSizeHelp.childNode)
-      if (this.$refs.textSizeHelp.childNode[0] !== undefined) {
-        lineHeight = this.$refs.textSizeHelp.childNode[0].clientHeight
+      console.log(this.$refs.textSizeHelp.childNodes)
+      if (this.$refs.textSizeHelp.hasChildNodes()) {
+        lineHeight = this.$refs.textSizeHelp.childNodes[0].clientHeight
       }
       if (ce.scrollTop > 0) {
         var newScroll = ce.scrollTop - (Math.floor(ce.clientHeight / lineHeight) * lineHeight)
@@ -275,9 +275,9 @@ export default {
       var ce = this.$refs.content
       var lineHeight = 1
       // read text line height
-      console.log(this.$refs.textSizeHelp.childNode)
-      if (this.$refs.textSizeHelp.childNode[0] !== undefined) {
-        lineHeight = this.$refs.textSizeHelp.childNode[0].clientHeight
+      console.log(this.$refs.textSizeHelp.childNodes)
+      if (this.$refs.textSizeHelp.hasChildNodes()) {
+        lineHeight = this.$refs.textSizeHelp.childNodes[0].clientHeight
       }
       console.log('1 fs ', lineHeight)
       if (ce.scrollHeight - ce.scrollTop > ce.clientHeight) {
