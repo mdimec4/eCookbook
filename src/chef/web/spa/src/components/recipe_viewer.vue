@@ -24,7 +24,13 @@
     </div>
 
     <!--print content-->
-    <div ref="content" id="content"> 
+    <div ref="content" id="content">
+      <!-- TODO
+      <span class="hiddenPrevNext" id="hiddenPrev" v-on:click="buttonBack">
+      </span>
+      <span class="hiddenPrevNext" id="hiddenNext" v-on:click="buttonNext">
+      </span>
+      -->
       <div v-if="rwhat==='ingredients'">
         <ul ref="textSizeHelp">
           <li v-for="ingredient in ingredients">
@@ -198,6 +204,7 @@ export default {
   },
   updated () { // bug use computed of watcher instead. updated doc says so
     console.log('updated')
+    /*
     console.log('updated offsetTop', this.$refs.content.offsetTop)
     console.log('updated offsetHeight', this.$refs.content.offsetHeight)
     console.log('updated scrollHeight', this.$refs.content.scrollHeight)
@@ -205,6 +212,7 @@ export default {
     console.log('updated clientHeight', this.$refs.content.clientHeight)
     console.log('window.inerHeight', window.innerHeight)
     console.log('document.body.clientHeight', document.body.clientHeight)
+    */
     this.$nextTick(function () {
       console.log('updated - $nextTick')
       var ce = this.$refs.content
@@ -369,6 +377,15 @@ font-size: 120%;
     width: 100vw;
     height: 65vh
 };
+/* TODO
+.hiddenPrevNext {
+  position: absolute;
+  background: transparent;
+  height: 100%;
+  width: 50%;
+  z-index: 1;
+};
+*/
 #position-info-container {
   border: solid;
   border-width: 1px 1px 1px 0px;
