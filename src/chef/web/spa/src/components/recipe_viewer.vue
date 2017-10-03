@@ -1,5 +1,6 @@
 <template>
   <div class="recipe_viewer">
+    <!-- header buttons -->
     <div id="back-next-home">
       <span><icon scale=2 name="home"></icon></span>
       <span v-if="this.rPagePrevShow" v-on:click="prevPage"><icon scale=2 name="arrow-left"></icon></span>
@@ -8,10 +9,12 @@
       <span v-if="this.rPageNextShow" v-on:click="nextPage"><icon scale=2 name="arrow-right"></icon></span>
     </div>
   
+    <!--title-->
     <div id="title">
       <h1>{{title}}</h1>
     </div>
 
+    <!--print content title-->
     <div v-if="rwhat==='ingredients'" id="subtitle">
       <h2>Ingredients</h2>
     </div>
@@ -22,6 +25,7 @@
       <h2>Tips</h2>
     </div>
 
+    <!--print content-->
     <div ref="content" id="content"> 
       <div v-if="rwhat==='ingredients'">
         <ul ref="textSizeHelp">
@@ -253,6 +257,7 @@ export default {
       var ce = this.$refs.content
       var lineHeight = 1
       // read text line height
+      console.log(this.$refs.textSizeHelp.childNode)
       if (this.$refs.textSizeHelp.childNode[0] !== undefined) {
         lineHeight = this.$refs.textSizeHelp.childNode[0].clientHeight
       }
@@ -270,6 +275,7 @@ export default {
       var ce = this.$refs.content
       var lineHeight = 1
       // read text line height
+      console.log(this.$refs.textSizeHelp.childNode)
       if (this.$refs.textSizeHelp.childNode[0] !== undefined) {
         lineHeight = this.$refs.textSizeHelp.childNode[0].clientHeight
       }
