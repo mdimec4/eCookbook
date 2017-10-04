@@ -1,12 +1,19 @@
 <template>
   <div class="recipe_viewer">
     <!-- header buttons -->
-    <div id="back-next-home">
+    <div id="menu">
       <router-link v-bind:to="'/'" style="color: black;"><icon scale=2 name="home"></icon></router-link>
-      <span v-if="this.rPagePrevShow" v-on:click="buttonBack"><icon scale=2 name="arrow-left"></icon></span>
+      <!--
+        <span v-if="this.rPagePrevShow" v-on:click="buttonBack"><icon scale=2 name="arrow-left"></icon></span>
       <span v-if="this.rPageNextShow" v-on:click="buttonNext"><icon scale=2 name="arrow-right"></icon></span>
+      -->
     </div>
-  
+
+    <!-- transperend overlayng almost whole page next and prev buttons-->
+    <span class="transperentPrevNext"  id="transperentPrev" v-on:click="buttonBack"></span>
+    <span class="transperentPrevNext" id="transperentNext" v-on:click="buttonNext"></span>
+
+
     <!--title-->
     <div id="title">
       <h1>{{title}}</h1>
@@ -25,12 +32,6 @@
 
     <!--print content-->
     <div ref="content" id="content">
-      <!-- TODO
-      <span class="hiddenPrevNext" id="hiddenPrev" v-on:click="buttonBack">
-      </span>
-      <span class="hiddenPrevNext" id="hiddenNext" v-on:click="buttonNext">
-      </span>
-      -->
       <div v-if="rwhat==='ingredients'">
         <ul ref="textSizeHelp">
           <li v-for="ingredient in ingredients">
@@ -64,6 +65,7 @@
 // https://stackoverflow.com/questions/40730116/scroll-to-bottom-of-div-with-vue-js
 // https://forum.vuejs.org/t/cant-change-dom-property/13397/2
 // https://stackoverflow.com/questions/4106538/difference-between-offsetheight-and-clientheight
+// http://vanseodesign.com/css/css-positioning/ // understand pusitioning
 function getRecipe (id) {
   var jsonStr = `{ 
     "recipe_id": "37859", 
@@ -144,12 +146,12 @@ export default {
   lastPageChange: '',
   data () {
     var recipe = getRecipe(this.$route.params.id)
-    var tmpNextShow = (recipe.instructions != null && recipe.instructions.length > 0) || (recipe.tips != null && recipe.tips.length > 0)
+    // var tmpNextShow = (recipe.instructions != null && recipe.instructions.length > 0) || (recipe.tips != null && recipe.tips.length > 0)
     return {
       rwhat: 'ingredients',
       instPage: 0,
-      rPageNextShow: tmpNextShow,
-      rPagePrevShow: false,
+      // rPageNextShow: tmpNextShow,
+      // rPagePrevShow: false,
       title: recipe.title,
       ingredients: recipe.ingredients,
       instructions: recipe.instructions,
@@ -252,19 +254,19 @@ export default {
           this.lastPageChange = 'prev'
           if (this.instPage > 0) {
             this.instPage--
-            this.rPageNextShow = true
-            this.rPagePrevShow = true
+            // this.rPageNextShow = true
+            // this.rPagePrevShow = true
           } else {
             this.rwhat = 'ingredients'
-            this.rPagePrevShow = false
-            this.rPageNextShow = true
+            // this.rPagePrevShow = false
+            // this.rPageNextShow = true
           }
           break
         case 'tips':
           this.lastPageChange = 'prev'
           this.rwhat = 'instructions'
-          this.rPagePrevShow = true
-          this.rPageNextShow = true
+          // this.rPagePrevShow = true
+          // this.rPageNextShow = true
           break
       }
     },
@@ -273,21 +275,21 @@ export default {
         case 'ingredients':
           this.lastPageChange = 'next'
           this.rwhat = 'instructions'
-          this.rPagePrevShow = true
-          this.rPageNextShow = (this.instructions != null && this.instructions.length > 0) || (this.tips != null && this.tips.length > 0)
+          // this.rPagePrevShow = true
+          // this.rPageNextShow = (this.instructions != null && this.instructions.length > 0) || (this.tips != null && this.tips.length > 0)
           break
         case 'instructions':
           if (this.instPage + 1 < (this.instructions.length)) {
             this.lastPageChange = 'next'
             this.instPage++
-            this.rPageNextShow = (this.instPage + 1 < ((this.instructions.length))) || (this.tips != null && this.tips.length > 0)
-            this.rPagePrevShow = true
+            // this.rPageNextShow = (this.instPage + 1 < ((this.instructions.length))) || (this.tips != null && this.tips.length > 0)
+            // this.rPagePrevShow = true
           } else {
             if (this.tips != null && this.tips.length > 0) {
               this.lastPageChange = 'next'
               this.rwhat = 'tips'
-              this.rPagePrevShow = true
-              this.rPageNextShow = false
+              // this.rPagePrevShow = true
+              // this.rPageNextShow = false
             }
           }
           break
@@ -357,7 +359,22 @@ overflow: hidden;
 font-family: 'Sanchez', serif;
 font-size: 120%;
 }
-#back-next-home {
+.transperentPrevNext {
+  position: absolute;
+  background: transparent;
+  height: 100%;
+  width: 50vw;
+  z-index: 1;
+};
+#transperentPrev {
+  left: 0;
+};
+#transperentNext {
+   left: 50vw;
+};
+
+
+#menu {
     width: 100vw;
     height: 5vh;
 }
@@ -376,14 +393,6 @@ font-size: 120%;
     overflow: hidden;
     width: 100vw;
     height: 75vh;
-};
-.-xxx-hiddenPrevNext { /*
-  position: absolute;
-  background: transparent;
-  height: 100%;
-  width: 50%;
-  z-index: 1;
-  */
 };
 #position-info-container {
   border: solid;
