@@ -392,7 +392,7 @@ font-size: 120%;
   position: fixed;
   left: 0px;
   bottom: 0px;
-  width: 100vw;
+  width: calc(100vw - 1px);
   height: 5vh;
 };
 .position-info {
