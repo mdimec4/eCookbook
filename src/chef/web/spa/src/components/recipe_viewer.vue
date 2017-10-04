@@ -2,7 +2,7 @@
   <div class="recipe_viewer">
     <!-- header buttons -->
     <div id="back-next-home">
-      <span><icon scale=2 name="home"></icon></span>
+      <router-link v-bind:to="'/'" style="color: black;"><icon scale=2 name="home"></icon></router-link>
       <span v-if="this.rPagePrevShow" v-on:click="buttonBack"><icon scale=2 name="arrow-left"></icon></span>
       <span v-if="this.rPageNextShow" v-on:click="buttonNext"><icon scale=2 name="arrow-right"></icon></span>
     </div>
@@ -359,15 +359,15 @@ font-size: 120%;
 }
 #back-next-home {
     width: 100vw;
-    height: 5vh
+    height: 5vh;
 }
 #title {
     width: 100vw;
-    height: 15vh
+    height: 15vh;
 }
 #subtitle {
     width: 100vw;
-    height: 10vh
+    height: 10vh;
 }
 #content {
     padding-left: 5vw;
@@ -375,7 +375,7 @@ font-size: 120%;
     display: block;
     overflow: hidden;
     width: 100vw;
-    height: 65vh
+    height: 65vh;
 };
 /* TODO
 .hiddenPrevNext {
@@ -394,7 +394,7 @@ font-size: 120%;
   left: 0px;
   bottom: 0px;
   width: 100vw;
-  height: 5vh
+  height: 5vh;
 };
 .position-info {
   float:left;
