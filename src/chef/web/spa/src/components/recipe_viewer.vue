@@ -363,11 +363,11 @@ font-size: 120%;
 }
 #title {
     width: 100vw;
-    height: 15vh;
+    height: 10vh;
 }
 #subtitle {
     width: 100vw;
-    height: 10vh;
+    height: 5vh;
 }
 #content {
     padding-left: 5vw;
@@ -375,22 +375,21 @@ font-size: 120%;
     display: block;
     overflow: hidden;
     width: 100vw;
-    height: 65vh;
+    height: 75vh;
 };
-/* TODO
-.hiddenPrevNext {
+.-xxx-hiddenPrevNext { /*
   position: absolute;
   background: transparent;
   height: 100%;
   width: 50%;
   z-index: 1;
+  */
 };
-*/
 #position-info-container {
   border: solid;
   border-width: 1px 1px 1px 0px;
   border-color:black;
-  position: absolute;
+  position: fixed;
   left: 0px;
   bottom: 0px;
   width: 100vw;
@@ -402,6 +401,7 @@ font-size: 120%;
   border-width: 0px 0px 0px 1px;
   border-color:black;
   width: calc(50% - 1px); /* subtract 1px border width */
+  height: 100%;
 };
 </style>
 
