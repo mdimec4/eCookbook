@@ -17,6 +17,8 @@ import Param from './components/Param'
 import paramdetails from './components/paramdetails'
 // import RecipeViewer component
 import RecipeViewer from './components/recipe_viewer'
+// import RecipeViewer component
+import RecipeEditor from './components/recipe_editor'
 
 import 'vue-awesome/icons'
 import Icon from 'vue-awesome/components/Icon'
@@ -33,8 +35,10 @@ const routes = [
 { path: '/param', component: Param },
 // route for the paramdetails passing in params
 { path: '/Paramdetails/:id', component: paramdetails, name: 'Paramdetails' },
-// route for the RecipeView passing in params
-{ path: '/recipe_viewer/:id', component: RecipeViewer, name: 'RecipeViewer' }
+// route for the RecipeViewer passing in params
+{ path: '/device/recipe_viewer/:id', component: RecipeViewer, name: 'RecipeViewer' },
+// route for the RecipeEditor passing in params
+{ path: '/recipe_editor/:id', component: RecipeEditor, name: 'RecipeEditor' }
 ]
 
 // Create the router instance and pass the `routes` option
