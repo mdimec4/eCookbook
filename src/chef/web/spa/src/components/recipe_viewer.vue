@@ -16,7 +16,7 @@
 
     <!--title-->
     <div id="title">
-      <h1>{{title}}</h1>
+      <h1>{{recipe.title}}</h1>
     </div>
 
     <!--print content title-->
@@ -24,7 +24,7 @@
       <h2>Ingredients</h2>
     </div>
     <div v-else-if="rwhat==='instructions'" id="subtitle">
-      <h2>Step {{instPage+1}} / {{instructions.length}}</h2>
+      <h2>Step {{instPage+1}} / {{recipe.instructions.length}}</h2>
     </div>
     <div v-else-if="rwhat==='tips'" id="subtitle">
       <h2>Tips</h2>
@@ -34,19 +34,19 @@
     <div ref="content" id="content">
       <div v-if="rwhat==='ingredients'">
         <ul ref="textSizeHelp">
-          <li v-for="ingredient in ingredients">
+          <li v-for="ingredient in recipe.ingredients">
             {{ ingredient }}
           </li>
         </ul>
       </div>
       <div v-else-if="rwhat==='instructions'" ref="textSizeHelp">
-        <div v-for="line in instructions[instPage].instruction.split('\n')">
+        <div v-for="line in recipe.instructions[instPage].instruction.split('\n')">
           {{line}}
         </div>
       </div>
       <div v-else-if="rwhat==='tips'">
         <ul ref="textSizeHelp">
-          <li v-for="tip in tips">
+          <li v-for="tip in recipe.tips">
             {{ tip }}
           </li>
         </ul>
@@ -152,30 +152,27 @@ export default {
       instPage: 0,
       // rPageNextShow: tmpNextShow,
       // rPagePrevShow: false,
-      title: recipe.title,
-      ingredients: recipe.ingredients,
-      instructions: recipe.instructions,
-      tips: recipe.tips,
+      recipe: recipe,
       subpagePosition: '0%'
     }
   },
   computed: {
     allPages: function () {
       var count = 0
-      if (this.ingredients) {
+      if (this.recipe.ingredients) {
         count++
       }
-      if (this.instructions) {
-        count += this.instructions.length
+      if (this.recipe.instructions) {
+        count += this.recipe.instructions.length
       }
-      if (this.tips) {
+      if (this.recipe.tips) {
         count++
       }
       return count
     },
     curentPage: function () {
       var baseIng = 0
-      if (this.ingredients) {
+      if (this.recipe.ingredients) {
         baseIng = 1
       }
       switch (this.rwhat) {
@@ -276,16 +273,16 @@ export default {
           this.lastPageChange = 'next'
           this.rwhat = 'instructions'
           // this.rPagePrevShow = true
-          // this.rPageNextShow = (this.instructions != null && this.instructions.length > 0) || (this.tips != null && this.tips.length > 0)
+          // this.rPageNextShow = (this.recipe.instructions != null && this.recipe.instructions.length > 0) || (this.recipe.tips != null && this.recipe.tips.length > 0)
           break
         case 'instructions':
-          if (this.instPage + 1 < (this.instructions.length)) {
+          if (this.instPage + 1 < (this.recipe.instructions.length)) {
             this.lastPageChange = 'next'
             this.instPage++
-            // this.rPageNextShow = (this.instPage + 1 < ((this.instructions.length))) || (this.tips != null && this.tips.length > 0)
+            // this.rPageNextShow = (this.instPage + 1 < ((this.recipe.instructions.length))) || (this.tips != null && this.tips.length > 0)
             // this.rPagePrevShow = true
           } else {
-            if (this.tips != null && this.tips.length > 0) {
+            if (this.recipe.tips != null && this.recipe.tips.length > 0) {
               this.lastPageChange = 'next'
               this.rwhat = 'tips'
               // this.rPagePrevShow = true
