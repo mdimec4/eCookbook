@@ -2,19 +2,36 @@
   <div class="recipe_editor">
     <h1>Editor</h1>
 
-    <div v-if="recipe.recipe_id">
+    <div style="color: gray;" v-if="recipe.recipe_id">
         <p>Editing recipe with unique id: {{recipe.recipe_id}}</p>
     </div>
 
-    <h2>Title:</h2>
-    <input v-model="recipe.title">
+    <!-- title editor-->
+    <div>
+        <h2>Title:</h2>
+        <input v-model="recipe.title">
+    </div>
 
-    <h2>Ingredients:</h2>
-     <div v-for="(ingredient, index) in recipe.ingredients">
-         <input v-model="recipe.ingredients[index]" type="text" :name="'ingredient'+index">
-         <span v-on:click="removeIngredient(index)"><icon style="color: red;"scale=1 name="remove"></icon></span>
-     </div>
-    <div v-on:click="addIngredient()"><icon style="color: red;"scale=1 name="plus"></icon></div>
+    <!-- INGREDIENTS EDITOR-->
+    <div>
+        <h2>Ingredients:</h2>
+        <div v-for="(ingredient, index) in recipe.ingredients">
+            <input v-model="recipe.ingredients[index]" type="text" :name="'ingredient'+index">
+            <span v-on:click="removeIngredient(index)"><icon style="color: red;"scale=1 name="remove"></icon></span>
+        </div>
+        <div v-on:click="addIngredient()"><icon style="color: red;"scale=1.5 name="plus"></icon></div>
+    </div>
+
+    <!-- TIPS EDITOR-->
+    <div>
+        <h2>Tips:</h2>
+        <div v-for="(tip, index) in recipe.tips">
+            <input v-model="recipe.tips[index]" type="text" :name="'tip'+index">
+            <span v-on:click="removeTip(index)"><icon style="color: red;"scale=1 name="remove"></icon></span>
+        </div>
+        <div v-on:click="addTip()"><icon style="color: red;"scale=1.5 name="plus"></icon></div>
+    </div>
+
 
     <button v-on:click="submit()">Submit</button>
   </div>
@@ -89,10 +106,21 @@ export default {
     addIngredient: function () {
       this.recipe.ingredients.push('')
     },
+    removeTip: function (index) {
+      console.log('rem', index)
+      this.recipe.tips.splice(index, 1)
+    },
+    addTip: function () {
+      this.recipe.tips.push('')
+    },
     submit: function () {
       // filter out empty ingredients
       this.recipe.ingredients = this.recipe.ingredients.filter(function (ingredient) {
         return ingredient.length > 0
+      })
+      // filter out empty tips
+      this.recipe.tips = this.recipe.tips.filter(function (tip) {
+        return tip.length > 0
       })
 
       var jsonRecipe = JSON.stringify(this.recipe)
