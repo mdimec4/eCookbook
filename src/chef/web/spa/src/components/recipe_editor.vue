@@ -115,11 +115,11 @@ export default {
     },
     submit: function () {
       // filter out empty ingredients
-      this.recipe.ingredients = this.recipe.ingredients.filter(function (ingredient) {
+      this.recipe.ingredients = this.recipe.ingredients.filter((ingredient) => {
         return ingredient.length > 0
       })
       // filter out empty tips
-      this.recipe.tips = this.recipe.tips.filter(function (tip) {
+      this.recipe.tips = this.recipe.tips.filter((tip) => {
         return tip.length > 0
       })
 
