@@ -22,6 +22,18 @@
         <div v-on:click="addIngredient()"><icon style="color: red;"scale=1.5 name="plus"></icon></div>
     </div>
 
+
+    <!-- INSTRUCTIONS EDITOR -->
+    <div>
+      <h2>Instructions:</h2>
+      <div v-for="(instruction, index) in recipe.instructions">
+        <h3>step {{index + 1}}</h3>
+        <textarea v-model="recipe.instructions[index].instruction"></textarea>
+        <span v-on:click="removeInstruction(index)"><icon style="color: red;"scale=1 name="remove"></icon></span>
+      </div>
+      <div v-on:click="addInstruction()"><icon style="color: red;"scale=1.5 name="plus"></icon></div>
+    </div>
+
     <!-- TIPS EDITOR-->
     <div>
         <h2>Tips:</h2>
@@ -58,17 +70,14 @@ function getRecipe (id) {
     ],
     "instructions": [
     {
-      "number": 1,
       "image_url": "http://static.food2fork.com/chickenturnover2_300e6667e66.jpg",
       "instruction": "lorem ipsum sdfgasdgasdfg" 
     },
     {
-      "number": 2, 
       "image_url": "http://static.food2fork.com/chickenturnover2_300e6667e66.jpg", 
       "instruction": "2 lorem ipsum sdfs<br>dfgf \\n sdf\\nga\\nsd\\ngasd\\nfg\\ndd\\ndddddd\\nddd\\ndd\\ndd\\ndd\\ndd\\ndddddddd\\ndddddd\\nddddd\\n1223344\\n566778\\n89890-\\n0-\\n646\\n364\\n6346\\n343646\\n3456534\\n6544\\n4444\\n4444444\\n44444\\n44444444444\\n4444444\\n444444\\n444444\\nmiha" 
     },
-    {
-      "number": 3, 
+    { 
       "image_url": "http://static.food2fork.com/chickenturnover2_300e6667e66.jpg", 
       "instruction": "1-3 lorem ipsum sdfsdfgf lorem ipsum sdfsdfgf\\n2-sdf\\n3-ga\\n4-sd\\n5-gasd\\n-6fg\\n7-dd\\n-8dddddd\\n-9dddlorem ipsum sdfsdfgf \\n10- sdf\\n11-ga\\n12-sd\\n13-gasd\\n14-fg\\n15-dd\\n16-dddddd\\n17-ddd\\n18- sdf\\n19-ga\\n20-sd\\n21-gasd\\n22-fg\\n23-dd\\n24-dddddd\\n25-ddd\\n26-dd\\n27-dd\\n28-dd\\n29-dd\\n30-dddddddd\\n31-dddddd\\n32-dd\\n33-d\\n34-d\\n35-d\\n36-12\\n37-23\\n38-34\\n39-4\\n40-566\\n41-778\\n42-89\\n843-90-\\n44-0-\\n45-646\\n46-364\\n47-6346\\n48-3436\\n49-46\\n50-3456534\\n51-6544\\n52-4444\\n53-44\\n54-4\\n55-4\\n56-4\\n57-4\\n58-4\\n59-44444\\n60-44444444444\\n61-4444444\\n62-444444\\n63-444444\\n64-miha" 
     }
@@ -113,10 +122,22 @@ export default {
     addTip: function () {
       this.recipe.tips.push('')
     },
+    removeInstruction: function (index) {
+      console.log('rem', index)
+      this.recipe.instructions.splice(index, 1)
+    },
+    addInstruction: function () {
+      this.recipe.instructions.push({instruction: ''})
+    },
     submit: function () {
       // filter out empty ingredients
       this.recipe.ingredients = this.recipe.ingredients.filter((ingredient) => {
         return ingredient.length > 0
+      })
+      // filter out empty instructions
+      this.recipe.instructions = this.recipe.instructions.filter((inst) => {
+        console.log('filter instruction ', inst.instruction, ' ', inst.instruction.length)
+        return inst.instruction.length > 0
       })
       // filter out empty tips
       this.recipe.tips = this.recipe.tips.filter((tip) => {

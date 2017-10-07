@@ -34,7 +34,6 @@ type Recipe struct {
 	Tags         []string `json:"tags"`
 	Ingredients  []string `json:"ingredients"`
 	Instructions []struct {
-		Number      int    `json:"number"`
 		ImageURL    string `json:"image_url"`
 		Instruction string `json:"instruction"`
 	} `json:"instructions"`
