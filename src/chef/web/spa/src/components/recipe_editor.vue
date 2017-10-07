@@ -147,6 +147,8 @@ export default {
 
       var jsonRecipe = JSON.stringify(this.recipe)
       console.log(jsonRecipe)
+      // TODO redirect back to recipe menu
+      this.$router.push({name: 'RecipeViewer', params: { userId: this.recipe.recipe_id }})
     }
   }
 }
