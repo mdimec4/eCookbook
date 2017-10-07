@@ -38,7 +38,9 @@ const routes = [
 // route for the RecipeViewer passing in params
 { path: '/device/recipe_viewer/:id', component: RecipeViewer, name: 'RecipeViewer' },
 // route for the RecipeEditor passing in params
-{ path: '/recipe_editor/:id', component: RecipeEditor, name: 'RecipeEditor' }
+{path: '/recipe_editor', component: RecipeEditor, name: 'RecipeEditorNew'},
+// route for the RecipeEditor passing in params
+{path: '/recipe_editor/:id', component: RecipeEditor, name: 'RecipeEditor'}
 ]
 
 // Create the router instance and pass the `routes` option
