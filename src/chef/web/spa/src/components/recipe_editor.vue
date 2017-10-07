@@ -139,6 +139,7 @@ export default {
         console.log('filter instruction ', inst.instruction, ' ', inst.instruction.length)
         return inst.instruction.length > 0
       })
+      // replace
       // filter out empty tips
       this.recipe.tips = this.recipe.tips.filter((tip) => {
         return tip.length > 0
@@ -157,19 +158,13 @@ export default {
 <style scoped>
 h1, h2 {
   font-weight: normal;
-}
-
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-
-a {
-  color: #42b983;
-}
+};
+textarea {
+  width: 90vw;
+  height: 25vh;
+  overflow:scroll;
+};
+input {
+  width: 90vw;
+};
 </style>
