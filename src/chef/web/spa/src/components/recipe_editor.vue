@@ -7,7 +7,7 @@
         <p>Editing recipe with unique id: {{recipe.recipe_id}}</p>
     </div>
 
-    <p style="color: red;">{{error_msg}}</p>
+    <p id="error_msg" ref="error_msg" style="color: red;">{{errorMsg}}</p>
 
     <!-- title editor-->
     <div>
@@ -142,7 +142,7 @@ export default {
       recipe.tips.push('')
     }
     return {
-      error_msg: '',
+      errorMsg: '',
       recipe: recipe
     }
   },
@@ -185,20 +185,23 @@ export default {
       })
 
       if (this.recipe.title === '') {
-        this.error_msg = 'You need to write recipe title!'
+        this.errorMsg = 'You need to write recipe title!'
+        this.$refs.error_msg.scrollIntoView()
         return
       }
       if (this.recipe.ingredients.length === 0) {
-        this.error_msg = 'You need to write ingrediend list!'
+        this.errorMsg = 'You need to write ingrediend list!'
+        this.$refs.error_msg.scrollIntoView()
         return
       }
       if (this.recipe.instructions.length === 0) {
-        this.error_msg = 'You need to write instructions!'
+        this.errorMsg = 'You need to write instructions!'
+        this.$refs.error_msg.scrollIntoView()
         return
       }
 
       var jsonRecipe = JSON.stringify(this.recipe)
-      this.error_msg = ''
+      this.errorMsg = ''
       console.log(jsonRecipe)
       // TODO redirect back to recipe menu
       // this.$router.push({name: 'RecipeViewer', params: { userId: this.recipe.recipe_id }})
