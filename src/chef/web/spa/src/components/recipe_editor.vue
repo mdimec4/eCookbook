@@ -24,11 +24,8 @@
     <!-- INGREDIENTS EDITOR-->
     <div>
         <h2>Ingredients:</h2>
-        <div v-for="(ingredient, index) in recipe.ingredients">
-            <input v-model="recipe.ingredients[index]" type="text" :name="'ingredient'+index">
-            <span v-on:click="removeIngredient(index)"><icon style="color: red;"scale=1 name="remove"></icon></span>
-        </div>
-        <div v-on:click="addIngredient()"><icon style="color: red;"scale=1.5 name="plus"></icon></div>
+        <p>Insert ingredients, one ingredient per line:</p>
+        <textarea v-model="ingredientsText"></textarea>
     </div>
 
 
@@ -132,28 +129,25 @@ export default {
     // if user will click subbmit and he/she didn't inset use field
     // created here, this wont be a problem. since submit will filter out
     // empty fields anyway, before further processing
-    if (recipe.ingredients.length === 0) {
-      recipe.ingredients.push('')
-    }
     if (recipe.instructions.length === 0) {
       recipe.ingredients.push({instruction: ''})
     }
     if (recipe.tips.length === 0) {
       recipe.tips.push('')
     }
+    // transform ingredients into textarea format
+    var ingText = recipe.ingredients.reduce((text, line) => {
+      console.log('->', text, line)
+      return text + line + '\n'
+    }, '')
+
     return {
       errorMsg: '',
+      ingredientsText: ingText,
       recipe: recipe
     }
   },
   methods: {
-    removeIngredient: function (index) {
-      console.log('rem', index)
-      this.recipe.ingredients.splice(index, 1)
-    },
-    addIngredient: function () {
-      this.recipe.ingredients.push('')
-    },
     removeTip: function (index) {
       console.log('rem', index)
       this.recipe.tips.splice(index, 1)
@@ -169,6 +163,8 @@ export default {
       this.recipe.instructions.push({instruction: ''})
     },
     submit: function () {
+      // transform textArea back to ingredients array
+      this.recipe.ingredients = this.ingredientsText.split('\n')
       // filter out empty ingredients
       this.recipe.ingredients = this.recipe.ingredients.filter((ingredient) => {
         return ingredient.length > 0
