@@ -2,14 +2,23 @@
   <div class="recipe_editor">
     <h1>Editor</h1>
 
+    <!-- recipe unuque id -->
     <div style="color: gray;" v-if="recipe.recipe_id">
         <p>Editing recipe with unique id: {{recipe.recipe_id}}</p>
     </div>
+
+    <p style="color: red;">{{error_msg}}</p>
 
     <!-- title editor-->
     <div>
         <h2>Title:</h2>
         <input v-model="recipe.title">
+    </div>
+
+        <!-- RECIPE SOURCE URL -->
+    <div>
+      <h2>Recipe source URL (optional):</h2>
+      <input v-model="recipe.source_url" type="text" :name="source_url">
     </div>
 
     <!-- INGREDIENTS EDITOR-->
@@ -94,10 +103,12 @@ export default {
     if (id && (typeof id === 'string' || id instanceof String) && id !== '') {
       var recipe = getRecipe(id)
       return {
+        error_msg: '',
         recipe: recipe
       }
     } else {
       return {
+        error_msg: '',
         recipe: {
           title: '',
           ingredients: [''],
@@ -145,10 +156,20 @@ export default {
         return tip.length > 0
       })
 
+      if (this.recipe.ingredients.length === 0) {
+        this.error_msg = 'You need to write ingrediend list!'
+        return
+      }
+      if (this.recipe.instructions.length === 0) {
+        this.error_msg = 'You need to write instructions!'
+        return
+      }
+
       var jsonRecipe = JSON.stringify(this.recipe)
+      this.error_msg = ''
       console.log(jsonRecipe)
       // TODO redirect back to recipe menu
-      this.$router.push({name: 'RecipeViewer', params: { userId: this.recipe.recipe_id }})
+      // this.$router.push({name: 'RecipeViewer', params: { userId: this.recipe.recipe_id }})
     }
   }
 }
