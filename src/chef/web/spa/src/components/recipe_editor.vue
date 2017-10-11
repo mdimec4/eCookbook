@@ -18,7 +18,7 @@
         <!-- RECIPE SOURCE URL -->
     <div>
       <h2>Recipe source URL (optional):</h2>
-      <input v-model="recipe.source_url" type="text" :name="source_url">
+      <input v-model="recipe.source_url" type="text" name="source_url">
     </div>
 
     <!-- INGREDIENTS EDITOR-->
@@ -99,23 +99,51 @@ function getRecipe (id) {
 export default {
   name: 'recipe_editor',
   data () {
-    var id = this.$route.params.id
-    if (id && (typeof id === 'string' || id instanceof String) && id !== '') {
-      var recipe = getRecipe(id)
-      return {
-        error_msg: '',
-        recipe: recipe
-      }
-    } else {
-      return {
-        error_msg: '',
-        recipe: {
-          title: '',
-          ingredients: [''],
-          instructions: [{number: 1, instruction: ''}],
-          tips: ['']
-        }
-      }
+    var recipe
+    var idParam = this.$route.params.id
+    if (idParam && (typeof idParam === 'string' || idParam instanceof String) && idParam !== '') {
+      recipe = getRecipe(idParam)
+    }
+    // append mising recipe object/properties so that vue.js won't cry
+    if (recipe === undefined) {
+      recipe = {}
+    }
+    if (recipe.recipe_id === undefined) {
+      recipe.recipe_id = ''
+    }
+    if (recipe.title === undefined) {
+      recipe.title = ''
+    }
+    if (recipe.source_url === undefined) {
+      recipe.source_url = ''
+    }
+    if (recipe.ingredients === undefined) {
+      recipe.ingredients = []
+    }
+    if (recipe.instructions === undefined) {
+      recipe.instructions = []
+    }
+    if (recipe.tips === undefined) {
+      recipe.tips = []
+    }
+
+    // we want to make UI user frendlu so we will offer one
+    // empty ingredient/instruction/tip in advance
+    // if user will click subbmit and he/she didn't inset use field
+    // created here, this wont be a problem. since submit will filter out
+    // empty fields anyway, before further processing
+    if (recipe.ingredients.length === 0) {
+      recipe.ingredients.push('')
+    }
+    if (recipe.instructions.length === 0) {
+      recipe.ingredients.push({instruction: ''})
+    }
+    if (recipe.tips.length === 0) {
+      recipe.tips.push('')
+    }
+    return {
+      error_msg: '',
+      recipe: recipe
     }
   },
   methods: {
@@ -156,6 +184,10 @@ export default {
         return tip.length > 0
       })
 
+      if (this.recipe.title === '') {
+        this.error_msg = 'You need to write recipe title!'
+        return
+      }
       if (this.recipe.ingredients.length === 0) {
         this.error_msg = 'You need to write ingrediend list!'
         return
