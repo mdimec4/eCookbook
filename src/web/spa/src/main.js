@@ -15,9 +15,11 @@ import About from './components/About'
 import Param from './components/Param'
 // import paramdetails component
 import paramdetails from './components/paramdetails'
+// import RecipeViewBrowser component
+import RecipeViewBrowser from './components/recipe_view_browser'
 // import RecipeViewer component
 import RecipeViewer from './components/recipe_viewer'
-// import RecipeViewer component
+// import RecipeEditor component
 import RecipeEditor from './components/recipe_editor'
 
 import 'vue-awesome/icons'
@@ -33,7 +35,9 @@ const routes = [
 { path: '/about', component: About },
 // oute for the param route of the webpage
 { path: '/param', component: Param },
-// route for the paramdetails passing in params
+// route for the RecipeViewBrowser passing in params
+{ path: '/device/recipe_view_browser', component: RecipeViewBrowser, name: 'RecipeViewBrowser' },
+// route for the paramdetails passing in param
 { path: '/Paramdetails/:id', component: paramdetails, name: 'Paramdetails' },
 // route for the RecipeViewer passing in params
 { path: '/device/recipe_viewer/:id', component: RecipeViewer, name: 'RecipeViewer' },
