@@ -25,7 +25,11 @@ import RecipeEditor from './components/recipe_editor'
 import 'vue-awesome/icons'
 import Icon from 'vue-awesome/components/Icon'
 
+import ScrollBar from 'vue2-scrollbar'
+
 Vue.component('icon', Icon)
+
+Vue.component('vue-scrollbar', ScrollBar)
 
 Vue.use(VueRouter)
 const routes = [
