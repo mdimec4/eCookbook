@@ -2,33 +2,31 @@
   <div class="recipe_view_browser">
       <h1>Recipe Browswer</h1>
       <div class="scroll-me">
-        <a href="https://google.com" style="float: left;">
-          <div class="kolom">Go To Google</div>
+        <a href="https://google.com"  class="kolom">
+          <div> Go To Google</div>
         </a>
-        <div class="kolom" style="float: left;">a</div>
+        <div class="kolom">a</div>
+        <div class="kolom">121</div>
+        <router-link class="kolom" v-bind:to="'/device/recipe_viewer'">Param Link</router-link>
+        <div class="kolom">sdfasfassa</div>
+        <div class="kolom">saasasdf</div>
+        <div class="kolom">sadfasdasd</div>
+        <div class="kolom">asasdfsad</div>
+        <div class="kolom">asfasd</div>
+        <div class="kolom">saasd</div>
+        <div class="kolom">sadfasdf</div>
+        <div class="kolom"></div>
+        <div class="kolom">safasdf</div>
         <div class="kolom"></div>
         <div class="kolom"></div>
         <div class="kolom"></div>
-        <div class="kolom"></div>
-        <div class="kolom"></div>
-        <div class="kolom"></div>
-        <div class="kolom"></div>
-        <div class="kolom"></div>
-        <div class="kolom"></div>
-        <div class="kolom"></div>
-        <div class="kolom"></div>
-        <div class="kolom"></div>
-        <div class="kolom"></div>
-        <div class="kolom"></div>
-        <div class="clearfix"></div>
+        <div class="kolom">last</div>
       </div>
-</vue-scrollbar>
   </div>
 </template>
 
 
 <script>
-
 function getRecipes (id) {
   var jsonStr = `[
     { 
@@ -295,10 +293,29 @@ html {
 	height:100%;
 }
 body {
-color: #000;
-overflow: hidden;
-font-family: 'Sanchez', serif;
-font-size: 120%;
+    color: #000;
+    overflow: hidden;
+    font-family: 'Sanchez', serif;
+    font-size: 120%;
+}
+.scroll-me {
+    margin: 0 auto;
+    width: 80vw;
+    height:70vh;
+    overflow: hidden;
+    border: solid;
+    border-width: 2px 2px 2px 2px;
+    border-color:black;
+}
+.kolom {
+    float: left;
+    width: 100%;
+    height: 20%;
+    text-align: center;
+    border: solid;
+    border-width: 0px 0px 1px 0px;
+    border-color:black;
+    overflow: hidden;
 }
 </style>
 
