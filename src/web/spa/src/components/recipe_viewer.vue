@@ -304,7 +304,6 @@ export default {
       var ce = this.$refs.content
       var lineHeight = 1
       // read text line height
-      console.log(this.$refs.textSizeHelp.childNodes)
       if (this.$refs.textSizeHelp.hasChildNodes()) {
         lineHeight = this.$refs.textSizeHelp.childNodes[0].clientHeight
       }
@@ -322,11 +321,9 @@ export default {
       var ce = this.$refs.content
       var lineHeight = 1
       // read text line height
-      console.log(this.$refs.textSizeHelp.childNodes)
       if (this.$refs.textSizeHelp.hasChildNodes()) {
         lineHeight = this.$refs.textSizeHelp.childNodes[0].clientHeight
       }
-      console.log('1 fs ', lineHeight)
       if (ce.scrollHeight - ce.scrollTop > ce.clientHeight) {
         var newScroll = ce.scrollTop + ce.clientHeight
         // make scroll multiple of lineHeight

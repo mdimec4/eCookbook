@@ -5,12 +5,12 @@
       </div>
 
       <div id="position-info-container">
-       <div class="position-info">Previus</div>
+       <div v-on:click="scrollUp" class="position-info">Previus</div>
        <div class="position-info">page 300/700</div>
-       <div class="position-info">Next</div>
+       <div v-on:click="scrollDown" class="position-info">Next</div>
       </div>
 
-      <div id="scroll-me">
+      <div ref="scroll_me" id="scroll_me">
         <a href="https://google.com"  class="kolom">
           <div> Go To Google</div>
         </a>
@@ -274,6 +274,7 @@ export default {
     }
   },
   computed: {
+
   },
   mounted: function () {
     console.log('mounted')
@@ -287,6 +288,41 @@ export default {
     })
   },
   methods: {
+    /*
+    renderScrollPosition: function () {
+      var ce = this.$refs.content
+      var allSubpages = ce.scrollHeight / ce.clientHeight
+      var subpage = ((ce.scrollTop + ce.clientHeight) / ce.scrollHeight) * allSubpages
+      this.subpagePosition = Math.floor((subpage / allSubpages) * 100).toString() + '%'
+    },
+    */
+    scrollUp: function (event) {
+      console.log('scrollUp')
+      var sm = this.$refs.scroll_me
+
+      if (sm.scrollTop > 0) {
+        var newScroll = sm.scrollTop - sm.clientHeight
+
+        if (newScroll < 0) {
+          newScroll = 0
+        }
+        sm.scrollTop = newScroll
+        // this.renderScrollPosition()
+      }
+    },
+    scrollDown: function (event) {
+      var sm = this.$refs.scroll_me
+
+      if (sm.scrollHeight - sm.scrollTop > sm.clientHeight) {
+        var newScroll = sm.scrollTop + sm.clientHeight
+
+        if (newScroll > (sm.scrollHeight - sm.clientHeight)) {
+          newScroll = sm.scrollHeight - sm.clientHeight
+        }
+        sm.scrollTop = newScroll
+        // this.renderScrollPosition()
+      }
+    }
   }
 }
 </script>
@@ -329,7 +365,7 @@ body {
   width: calc(33% - 1px); /* subtract 1px border width */
   height: 100%;
 };
-#scroll-me {
+#scroll_me {
     margin: 0 auto;
     width: calc(100vw - 2*2px);
     height: calc(80vh - 2*2px);
@@ -341,7 +377,7 @@ body {
 .kolom {
     float: left;
     width: 100%;
-    height: 20%;
+    height: calc(20% - 1px);
     text-align: center;
     border: solid;
     border-width: 0px 0px 1px 0px;
