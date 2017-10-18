@@ -6,7 +6,7 @@
 
       <div id="position-info-container">
        <div v-on:click="scrollUp" class="position-info">Previus</div>
-       <div class="position-info">page 300/700</div>
+       <div class="position-info">page {{pagePosition}}</div>
        <div v-on:click="scrollDown" class="position-info">Next</div>
       </div>
 
@@ -29,6 +29,7 @@
         <div class="kolom"></div>
         <div class="kolom"></div>
         <div class="kolom"></div>
+        <div class="kolom">before last</div
         <div class="kolom">last</div>
       </div>
   </div>
@@ -257,7 +258,18 @@ function getRecipes (id) {
             "gluten","fish", "vegan"
         ],
         "tips": [ "tip1", "tip2", "tip3"] 
-    }      
+    },
+    {
+        "recipe_id": "21-732323434", 
+        "publisher": "Not Simple", 
+        "source_url": "http://food2fork.com/view/37859", 
+        "title": "Alergija zadnja", 
+        "image_url": "http://static.food2fork.com/chickenturnover2_300e6667e66.jpg", 
+        "tags": [
+            "gluten","fish", "vegan"
+        ],
+        "tips": [ "tip1", "tip2", "tip3"] 
+    }     
     ]`
   return JSON.parse(jsonStr)
 }
@@ -270,7 +282,8 @@ export default {
       recepies = []
     }
     return {
-      recepies: recepies
+      recepies: recepies,
+      pagePosition: '0%'
     }
   },
   computed: {
@@ -280,22 +293,22 @@ export default {
     console.log('mounted')
     this.$nextTick(function () {
       console.log('mounted - $nextTick')
+      this.renderScrollPosition()
     })
   },
   updated () { // bug use computed of watcher instead. updated doc says so
     console.log('updated')
     this.$nextTick(function () {
+      this.renderScrollPosition()
     })
   },
   methods: {
-    /*
     renderScrollPosition: function () {
-      var ce = this.$refs.content
-      var allSubpages = ce.scrollHeight / ce.clientHeight
-      var subpage = ((ce.scrollTop + ce.clientHeight) / ce.scrollHeight) * allSubpages
-      this.subpagePosition = Math.floor((subpage / allSubpages) * 100).toString() + '%'
+      var sm = this.$refs.scroll_me
+      var allSubpages = sm.scrollHeight / sm.clientHeight
+      var subpage = ((sm.scrollTop + sm.clientHeight) / sm.scrollHeight) * allSubpages
+      this.pagePosition = Math.floor((subpage / allSubpages) * 100).toString() + '%'
     },
-    */
     scrollUp: function (event) {
       console.log('scrollUp')
       var sm = this.$refs.scroll_me
@@ -307,7 +320,7 @@ export default {
           newScroll = 0
         }
         sm.scrollTop = newScroll
-        // this.renderScrollPosition()
+        this.renderScrollPosition()
       }
     },
     scrollDown: function (event) {
@@ -320,7 +333,7 @@ export default {
           newScroll = sm.scrollHeight - sm.clientHeight
         }
         sm.scrollTop = newScroll
-        // this.renderScrollPosition()
+        this.renderScrollPosition()
       }
     }
   }
