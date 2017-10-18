@@ -11,26 +11,7 @@
       </div>
 
       <div ref="scroll_me" id="scroll_me">
-        <a href="https://google.com"  class="kolom">
-          <div> Go To Google</div>
-        </a>
-        <div class="kolom">a</div>
-        <div class="kolom">121</div>
-        <router-link class="kolom" v-bind:to="'/device/recipe_viewer'">Param Link</router-link>
-        <div class="kolom">sdfasfassa</div>
-        <div class="kolom">saasasdf</div>
-        <div class="kolom">sadfasdasd</div>
-        <div class="kolom">asasdfsad</div>
-        <div class="kolom">asfasd</div>
-        <div class="kolom">saasd</div>
-        <div class="kolom">sadfasdf</div>
-        <div class="kolom"></div>
-        <div class="kolom">safasdf</div>
-        <div class="kolom"></div>
-        <div class="kolom"></div>
-        <div class="kolom"></div>
-        <div class="kolom">before last</div
-        <div class="kolom">last</div>
+            <router-link v-for="recipe in recipes" class="kolom" v-bind:to="{name: 'RecipeViewer', params: { userId: recipe.recipe_id}}">{{recipe.title}}</router-link>
       </div>
   </div>
 </template>
@@ -277,12 +258,12 @@ function getRecipes (id) {
 export default {
   name: 'recipe_view_browser',
   data () {
-    var recepies = getRecipes()
-    if (!recepies || recepies === undefined) {
-      recepies = []
+    var recipes = getRecipes()
+    if (!recipes || recipes === undefined) {
+      recipes = []
     }
     return {
-      recepies: recepies,
+      recipes: recipes,
       pagePosition: '0%'
     }
   },
