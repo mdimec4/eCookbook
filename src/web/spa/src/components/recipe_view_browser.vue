@@ -1,7 +1,16 @@
 <template>
   <div class="recipe_view_browser">
-      <h1>Recipe Browswer</h1>
-      <div class="scroll-me">
+      <div id="title">
+        <h1>Recipe Browswer</h1>
+      </div>
+
+      <div id="position-info-container">
+       <div class="position-info">Previus</div>
+       <div class="position-info">page 300/700</div>
+       <div class="position-info">Next</div>
+      </div>
+
+      <div id="scroll-me">
         <a href="https://google.com"  class="kolom">
           <div> Go To Google</div>
         </a>
@@ -282,13 +291,12 @@ export default {
 }
 </script>
 <style>
-/*
+
  * {
     margin: 0px;
     padding: 0px;
     border-width: 0px;
- }
- */
+ };
 html {
 	height:100%;
 }
@@ -297,11 +305,34 @@ body {
     overflow: hidden;
     font-family: 'Sanchez', serif;
     font-size: 120%;
+    margin: 0px;
+    padding: 0px;
+    border-width: 0px;
 }
-.scroll-me {
+#title {
+    width: 100vw;
+    height: 10vh;
+
+};
+#position-info-container {
+  border: solid;
+  border-width: 1px 1px 1px 0px;
+  border-color:black;
+  width: calc(100vw - 1px);
+  height: calc(10vh - 2px);
+};
+.position-info {
+  float:left;
+  border: solid;
+  border-width: 0px 0px 0px 1px;
+  border-color:black;
+  width: calc(33% - 1px); /* subtract 1px border width */
+  height: 100%;
+};
+#scroll-me {
     margin: 0 auto;
-    width: 80vw;
-    height:70vh;
+    width: calc(100vw - 2*2px);
+    height: calc(80vh - 2*2px);
     overflow: hidden;
     border: solid;
     border-width: 2px 2px 2px 2px;
