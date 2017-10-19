@@ -11,7 +11,7 @@
       </div>
 
       <div ref="scroll_me" id="scroll_me">
-            <router-link v-for="recipe in recipes" class="kolom" v-bind:to="{name: 'RecipeViewer', params: { userId: recipe.recipe_id}}">{{recipe.title}}</router-link>
+            <router-link v-for="recipe in recipes" class="kolom" v-bind:key="recipe.recipe_id" v-bind:to="{name: 'RecipeViewer', params: { userId: recipe.recipe_id}}">{{recipe.title}}</router-link>
       </div>
   </div>
 </template>

@@ -67,6 +67,7 @@
 // https://stackoverflow.com/questions/4106538/difference-between-offsetheight-and-clientheight
 // http://vanseodesign.com/css/css-positioning/ // understand pusitioning
 function getRecipe (id) {
+  console.log('getRecipe(', id, ')')
   var jsonStr = `{ 
     "recipe_id": "37859", 
     "publisher": "Real Simple", 
