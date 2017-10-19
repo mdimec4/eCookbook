@@ -100,6 +100,7 @@ export default {
     var initErr = ''
     var idParam = this.$route.params.id
     if (idParam && (typeof idParam === 'string' || idParam instanceof String) && idParam !== '') {
+      // if id parameter is providet, the we edit existing recipe
       recipe = getRecipe(idParam)
       if (recipe === null || typeof recipe !== 'object') {
         initErr = 'recipe not found'
