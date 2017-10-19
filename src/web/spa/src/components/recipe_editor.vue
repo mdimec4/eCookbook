@@ -200,7 +200,7 @@ export default {
       this.errorMsg = ''
       console.log(jsonRecipe)
       // TODO redirect back to recipe menu
-      // this.$router.push({name: 'RecipeViewer', params: { userId: this.recipe.recipe_id }})
+      // this.$router.push({name: 'RecipeViewer', params: { id: this.recipe.recipe_id }})
     }
   }
 }
