@@ -146,8 +146,14 @@ export default {
   name: 'recipe_viewer',
   lastPageChange: '',
   data () {
-    var recipe = getRecipe(this.$route.params.id)
-    // var tmpNextShow = (recipe.instructions != null && recipe.instructions.length > 0) || (recipe.tips != null && recipe.tips.length > 0)
+    var recipe
+    recipe = getRecipe(this.$route.params.id)
+    if (recipe === null || typeof recipe !== 'object') {
+      recipe = {}
+    }
+    if (recipe.recipe_id === null || !(typeof recipe.recipe_id === 'string' || recipe.recipe_id instanceof String)) {
+      recipe.title = 'recipe not found'
+    }
     return {
       rwhat: 'ingredients',
       instPage: 0,

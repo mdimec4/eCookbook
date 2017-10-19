@@ -97,12 +97,16 @@ export default {
   name: 'recipe_editor',
   data () {
     var recipe
+    var initErr = ''
     var idParam = this.$route.params.id
     if (idParam && (typeof idParam === 'string' || idParam instanceof String) && idParam !== '') {
       recipe = getRecipe(idParam)
+      if (recipe === null || typeof recipe !== 'object') {
+        initErr = 'recipe not found'
+      }
     }
     // append mising recipe object/properties so that vue.js won't cry
-    if (recipe === undefined) {
+    if (recipe === null || typeof recipe !== 'object') {
       recipe = {}
     }
     if (recipe.recipe_id === undefined) {
@@ -130,7 +134,7 @@ export default {
     // created here, this wont be a problem. since submit will filter out
     // empty fields anyway, before further processing
     if (recipe.instructions.length === 0) {
-      recipe.ingredients.push({instruction: ''})
+      recipe.instructions.push({instruction: ''})
     }
     if (recipe.tips.length === 0) {
       recipe.tips.push('')
@@ -142,7 +146,7 @@ export default {
     }, '')
 
     return {
-      errorMsg: '',
+      errorMsg: initErr,
       ingredientsText: ingText,
       recipe: recipe
     }
