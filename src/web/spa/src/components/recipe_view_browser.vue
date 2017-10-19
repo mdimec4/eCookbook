@@ -264,7 +264,7 @@ export default {
     }
     return {
       recipes: recipes,
-      pagePosition: '0%'
+      pagePosition: '0/0'
     }
   },
   computed: {
@@ -288,7 +288,8 @@ export default {
       var sm = this.$refs.scroll_me
       var allSubpages = sm.scrollHeight / sm.clientHeight
       var subpage = ((sm.scrollTop + sm.clientHeight) / sm.scrollHeight) * allSubpages
-      this.pagePosition = Math.floor((subpage / allSubpages) * 100).toString() + '%'
+      this.pagePosition = Math.ceil(subpage).toString() + '/' + Math.ceil(allSubpages).toString()
+      console.log('page ', subpage, ' / ', allSubpages)
     },
     scrollUp: function (event) {
       console.log('scrollUp')
