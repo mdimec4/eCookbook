@@ -52,7 +52,7 @@ const routes = [
 // keep it simple for now.
 const router = new VueRouter({
   routes, // short for routes: routes
-  mode: 'history'
+  mode: 'history' /* 'hash' */
 })
 
 // place the router guard

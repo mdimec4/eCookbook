@@ -1,5 +1,8 @@
 <template>
   <div class="hello">
+    <router-link v-bind:to="'/'">Home</router-link>
+    <router-link v-bind:to="'/about'">About</router-link>
+    <router-link v-bind:to="'/param'">Param Link</router-link>
     <h1>{{ msg }}</h1>
     <h2>Essential Links</h2>
     <ul>

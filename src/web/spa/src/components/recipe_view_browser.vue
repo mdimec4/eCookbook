@@ -4,10 +4,10 @@
         <h1>Recipe Browswer</h1>
       </div>
 
-      <div id="position-info-container">
-       <div v-on:click="scrollUp" class="position-info">Previus</div>
-       <div class="position-info">page {{pagePosition}}</div>
-       <div v-on:click="scrollDown" class="position-info">Next</div>
+      <div id="selector-container">
+       <div v-on:click="scrollUp" class="selector">Previus</div>
+       <div class="selector">page {{pagePosition}}</div>
+       <div v-on:click="scrollDown" class="selector">Next</div>
       </div>
 
       <div ref="scroll_me" id="scroll_me">
@@ -335,23 +335,20 @@ body {
     overflow: hidden;
     font-family: 'Sanchez', serif;
     font-size: 120%;
-    margin: 0px;
-    padding: 0px;
-    border-width: 0px;
 }
 #title {
     width: 100vw;
     height: 10vh;
 
 };
-#position-info-container {
+#selector-container {
   border: solid;
   border-width: 1px 1px 1px 0px;
   border-color:black;
   width: calc(100vw - 1px);
   height: calc(10vh - 2px);
 };
-.position-info {
+.selector {
   float:left;
   border: solid;
   border-width: 0px 0px 0px 1px;
