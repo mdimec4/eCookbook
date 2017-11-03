@@ -19,6 +19,8 @@ import paramdetails from './components/paramdetails'
 import RecipeViewBrowser from './components/recipe_view_browser'
 // import RecipeViewer component
 import RecipeViewer from './components/recipe_viewer'
+// import RecipeEditorList component
+import RecipeEditorList from './components/recipe_editor_list'
 // import RecipeEditor component
 import RecipeEditor from './components/recipe_editor'
 
@@ -35,12 +37,14 @@ const routes = [
 { path: '/about', component: About },
 // oute for the param route of the webpage
 { path: '/param', component: Param },
-// route for the RecipeViewBrowser passing in params
-{ path: '/device/recipe_view_browser', component: RecipeViewBrowser, name: 'RecipeViewBrowser' },
 // route for the paramdetails passing in param
 { path: '/Paramdetails/:id', component: paramdetails, name: 'Paramdetails' },
+// route for the RecipeViewBrowser passing in params
+{ path: '/device/recipe_view_browser', component: RecipeViewBrowser, name: 'RecipeViewBrowser' },
 // route for the RecipeViewer passing in params
 { path: '/device/recipe_viewer/:id', component: RecipeViewer, name: 'RecipeViewer' },
+// route for the RecipeEditor passing in params
+{path: '/recipe_editor_list', component: RecipeEditorList, name: 'RecipeEditorList'},
 // route for the RecipeEditor passing in params
 {path: '/recipe_editor', component: RecipeEditor, name: 'RecipeEditorNew'},
 // route for the RecipeEditor passing in params

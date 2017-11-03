@@ -204,8 +204,8 @@ export default {
       var jsonRecipe = JSON.stringify(this.recipe)
       this.errorMsg = ''
       console.log(jsonRecipe)
-      // TODO redirect back to recipe menu
-      // this.$router.push({name: 'RecipeViewer', params: { id: this.recipe.recipe_id }})
+      // redirect back to recipe menu
+      this.$router.push({name: 'RecipeEditorList'})
     }
   }
 }
