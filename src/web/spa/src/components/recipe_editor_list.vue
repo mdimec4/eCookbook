@@ -7,6 +7,7 @@
 </template>
 
 <script>
+import {somethingElse} from './api2'
 function getRecipes () {
   var jsonStr = `[
     { 
@@ -243,11 +244,13 @@ function getRecipes () {
     ]`
   return JSON.parse(jsonStr)
 }
-
+var apiModule = require('../assets/api.js') // XXX test CommonJS
 export default {
   name: 'recipe_editor_list',
   data () {
     var recipes = getRecipes()
+
+    console.log('!!!!', apiModule.doSomething(), somethingElse())
     return {
       recipes: recipes
     }
