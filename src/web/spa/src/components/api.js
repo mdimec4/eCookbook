@@ -14,11 +14,8 @@ export function getRecipes () {
           xhr.responseType))
       }
     }
-    xhr.onerror = () => reject(new Error(xhr.statusText))
-    xhr.ontimeout = (e) => {
-      console.error('Timeout!!')
-      reject(new Error('timeout'))
-    }
+    xhr.onerror = () => reject(new Error('an error occurred during the transaction'))
+    xhr.ontimeout = (e) => reject(new Error('timeout'))
     xhr.open('GET', myRemote + '/api/recipes', true)
     xhr.send()
   })
