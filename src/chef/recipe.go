@@ -103,6 +103,7 @@ func GetRecipesList(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println("str ", string(b))
 	w.Header().Set("Content-Type", "application/json")
+    w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Write(b)
 }
 
@@ -124,6 +125,7 @@ func GetRecipe(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println("str ", string(b))
 	w.Header().Set("Content-Type", "application/json")
+    w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Write(b)
 }
 
@@ -144,6 +146,7 @@ func PostNewRecipe(w http.ResponseWriter, r *http.Request) {
 	// Location
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Location", r.URL.Path+"/"+id)
+    w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.WriteHeader(http.StatusCreated)
 }
 
@@ -174,6 +177,7 @@ func PutUpdateRecipe(w http.ResponseWriter, r *http.Request) {
 	// Location
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Location", r.URL.Path)
+    w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.WriteHeader(http.StatusCreated)
 }
 
@@ -188,6 +192,7 @@ func DeleteRecipe(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+    w.Header().Set("Access-Control-Allow-Origin", "*")
 	// 204 NoContent
 	w.WriteHeader(http.StatusNoContent)
 }
