@@ -6,15 +6,6 @@ import Vue from 'vue'
 import App from './App'
 // import the vue router
 import VueRouter from 'vue-router'
-// tell vue to use the router
-// import the hello component
-import Hello from './components/Hello'
-// import the about component
-import About from './components/About'
-// import the param component
-import Param from './components/Param'
-// import paramdetails component
-import paramdetails from './components/paramdetails'
 // import RecipeViewBrowser component
 import RecipeViewBrowser from './components/recipe_view_browser'
 // import RecipeViewer component
@@ -27,28 +18,21 @@ import RecipeEditor from './components/recipe_editor'
 import 'vue-awesome/icons'
 import Icon from 'vue-awesome/components/Icon'
 
+// tell vue to use the router
 Vue.component('icon', Icon)
 
 Vue.use(VueRouter)
 const routes = [
-// define the root url of the application.
-{ path: '/', component: Hello },
-// route for the about route of the web page
-{ path: '/about', component: About },
-// oute for the param route of the webpage
-{ path: '/param', component: Param },
-// route for the paramdetails passing in param
-{ path: '/Paramdetails/:id', component: paramdetails, name: 'Paramdetails' },
-// route for the RecipeViewBrowser passing in params
-{ path: '/device/recipe_view_browser', component: RecipeViewBrowser, name: 'RecipeViewBrowser' },
-// route for the RecipeViewer passing in params
-{ path: '/device/recipe_viewer/:id', component: RecipeViewer, name: 'RecipeViewer' },
 // route for the RecipeEditor passing in params
-{path: '/recipe_editor_list', component: RecipeEditorList, name: 'RecipeEditorList'},
+{path: '/', component: RecipeEditorList, name: 'RecipeEditorList'},
 // route for the RecipeEditor passing in params
 {path: '/recipe_editor', component: RecipeEditor, name: 'RecipeEditorNew'},
 // route for the RecipeEditor passing in params
-{path: '/recipe_editor/:id', component: RecipeEditor, name: 'RecipeEditor'}
+{path: '/recipe_editor/:id', component: RecipeEditor, name: 'RecipeEditor'},
+// route for the RecipeViewBrowser passing in params
+{ path: '/device/recipe_view_browser', component: RecipeViewBrowser, name: 'RecipeViewBrowser' },
+// route for the RecipeViewer passing in params
+{ path: '/device/recipe_viewer/:id', component: RecipeViewer, name: 'RecipeViewer' }
 ]
 
 // Create the router instance and pass the `routes` option

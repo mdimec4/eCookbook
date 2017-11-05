@@ -107,17 +107,6 @@ export default {
   name: 'recipe_viewer',
   lastPageChange: '',
   data () {
-    /*
-    var recipe // get
-    recipe = getRecipe(this.$route.params.id) // get
-    if (recipe === null || typeof recipe !== 'object') {
-      recipe = {} // get
-    }
-    if (recipe.recipe_id === null || !(typeof recipe.recipe_id === 'string' || recipe.recipe_id instanceof String)) {
-      recipe.title = 'recipe not found'
-    }// get
-    */
-
     var recipe = {
       recipe_id: '',
       title: '',
