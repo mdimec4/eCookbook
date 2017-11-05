@@ -28,7 +28,7 @@ export default {
   },
   methods: {
     removeRecipe: function (recipe) {
-      deleteRecipe(recipe.recipe_id + 'xxx').then((status) => {
+      deleteRecipe(recipe.recipe_id).then((status) => {
         console.log(status)
         // use filter to also remove succesfuly removed recipe
         this.recipes = this.recipes.filter((recipeFilter) => {

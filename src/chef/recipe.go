@@ -92,7 +92,6 @@ func newRecipe(recipe Recipe) (string, error) {
 
 func GetRecipesList(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Access-Control-Allow-Origin", "*")
-    w.Header().Set("Access-Control-Allow-Methods", "POST, DELETE, PUT, GET")
 
     l, err := db.ListRecipes()
 	if err != nil {
@@ -112,7 +111,6 @@ func GetRecipesList(w http.ResponseWriter, r *http.Request) {
 func GetRecipe(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
     w.Header().Set("Access-Control-Allow-Origin", "*")
-    w.Header().Set("Access-Control-Allow-Methods", "POST, DELETE, PUT, GET")
 
     recipe, err := db.GetRecipe(params["id"])
     if err != nil {
@@ -136,7 +134,6 @@ func GetRecipe(w http.ResponseWriter, r *http.Request) {
 func PostNewRecipe(w http.ResponseWriter, r *http.Request) {
 	var recipe Recipe
     w.Header().Set("Access-Control-Allow-Origin", "*")
-    w.Header().Set("Access-Control-Allow-Methods", "POST, DELETE, PUT, GET")
 
     err := json.NewDecoder(r.Body).Decode(&recipe)
 	if err != nil {
@@ -159,7 +156,6 @@ func PostNewRecipe(w http.ResponseWriter, r *http.Request) {
 func PutUpdateRecipe(w http.ResponseWriter, r *http.Request) {
 	var recipe Recipe
     w.Header().Set("Access-Control-Allow-Origin", "*")
-    w.Header().Set("Access-Control-Allow-Methods", "POST, DELETE, PUT, GET")
 
     err := json.NewDecoder(r.Body).Decode(&recipe)
 	if err != nil {
@@ -192,7 +188,6 @@ func PutUpdateRecipe(w http.ResponseWriter, r *http.Request) {
 func DeleteRecipe(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
     w.Header().Set("Access-Control-Allow-Origin", "*")
-    w.Header().Set("Access-Control-Allow-Methods", "POST, DELETE, PUT, GET")
 
     err := db.DeleteRecipe(params["id"])
 	if err != nil {
@@ -209,7 +204,8 @@ func DeleteRecipe(w http.ResponseWriter, r *http.Request) {
 
 func SendOptions(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Access-Control-Allow-Origin", "*")
-    w.Header().Set("Access-Control-Allow-Methods", "POST, DELETE, PUT, GET")
+    w.Header().Set("Access-Control-Allow-Methods", "POST, DELETE, PUT, GET, OPTIONS")
+    w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	// 204 NoContent
 	w.WriteHeader(http.StatusNoContent)
 }

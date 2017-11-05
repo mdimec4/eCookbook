@@ -66,7 +66,7 @@ export function postOrPutRecipe (recipe) {
       idStr = '/' + recipe.recipe_id
     }
     xhr.open(method, myRemote + '/api/recipes' + idStr, true)
-    xhr.setRequestHeader('Content-type', 'application/json')
+    xhr.setRequestHeader('Content-Type', 'application/json')
     xhr.send(JSON.stringify(recipe))
   })
 }
