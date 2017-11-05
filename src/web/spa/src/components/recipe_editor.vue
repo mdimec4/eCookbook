@@ -69,6 +69,22 @@ export default {
       instructions: [],
       tips: []
     }
+    // there are basicly two options. Eather we are editing new recipe, or we are editing exiting recipe.
+    // If we are editing nre recipe, then 'id' param is not set and we will nt fetch exiting recipe from server.
+    var idParam = this.$route.params.id
+    if (!idParam || !(typeof idParam === 'string' || idParam instanceof String) || idParam === '') {
+      // we want to make UI user frendly so we will offer one
+      // empty ingredient/instruction/tip in advance
+      // if user will click subbmit and he/she didn't insert nthing into emty field
+      // created here, this wont be a problem. since submit will filter out
+      // empty fields anyway, before further processing
+      if (recipe.instructions.length === 0) {
+        recipe.instructions.push({instruction: ''})
+      }
+      if (recipe.tips.length === 0) {
+        recipe.tips.push('')
+      }
+    }
     return {
       errorMsg: '',
       ingredientsText: '',
@@ -76,10 +92,10 @@ export default {
     }
   },
   mounted: function () {
-    var idParam = this.$route.params.id
     // there are basicly two options. Eather we are editing new recipe, or we are editing exiting recipe.
     // If we are editing exiting recipe, then 'id' param is set and we need to feth exiting recipe from server
     // and populate editor fields with existing data
+    var idParam = this.$route.params.id
     if (idParam && (typeof idParam === 'string' || idParam instanceof String) && idParam !== '') {
       getRecipes(idParam).then((recipe) => {
         if (recipe === undefined || recipe === null || typeof recipe !== 'object') {
@@ -106,7 +122,7 @@ export default {
         }
         // we want to make UI user frendly so we will offer one
         // empty ingredient/instruction/tip in advance
-        // if user will click subbmit and he/she didn't inset use field
+        // if user will click subbmit and he/she didn't insert nthing into emty field
         // created here, this wont be a problem. since submit will filter out
         // empty fields anyway, before further processing
         if (recipe.instructions.length === 0) {
@@ -116,12 +132,12 @@ export default {
           recipe.tips.push('')
         }
         // transform ingredients into textarea format
-        var ingText = recipe.ingredients.reduce((text, line) => { // get
+        var ingText = recipe.ingredients.reduce((text, line) => {
           console.log('->', text, line)
           return text + line + '\n'
         }, '')
         this.recipe = recipe
-        this.ingredientsTex = ingText
+        this.ingredientsText = ingText
       }, (err) => {
         console.error('getRecipes promise: ', err)
         this.errorMsg = err
