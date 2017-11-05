@@ -46,7 +46,7 @@ var (
 
 var (
 	errRecipeExist       = errors.New("recipe already exists")
-	errRecipeExistNot    = errors.New("recipe doesn't exists")
+	errRecipeExistNot    = errors.New("recipe doesn't exist")
 	errRecipeTitleNotSet = errors.New("recipe title is not set")
 )
 
@@ -91,7 +91,10 @@ func newRecipe(recipe Recipe) (string, error) {
 }
 
 func GetRecipesList(w http.ResponseWriter, r *http.Request) {
-	l, err := db.ListRecipes()
+    w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Access-Control-Allow-Methods", "POST, DELETE, PUT, GET")
+
+    l, err := db.ListRecipes()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -103,14 +106,16 @@ func GetRecipesList(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println("str ", string(b))
 	w.Header().Set("Content-Type", "application/json")
-    w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Write(b)
 }
 
 func GetRecipe(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	recipe, err := db.GetRecipe(params["id"])
-	if err != nil {
+    w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Access-Control-Allow-Methods", "POST, DELETE, PUT, GET")
+
+    recipe, err := db.GetRecipe(params["id"])
+    if err != nil {
 		if err == errRecipeExistNot {
 			http.Error(w, err.Error(), http.StatusNotFound)
 			return
@@ -125,13 +130,15 @@ func GetRecipe(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println("str ", string(b))
 	w.Header().Set("Content-Type", "application/json")
-    w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Write(b)
 }
 
 func PostNewRecipe(w http.ResponseWriter, r *http.Request) {
 	var recipe Recipe
-	err := json.NewDecoder(r.Body).Decode(&recipe)
+    w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Access-Control-Allow-Methods", "POST, DELETE, PUT, GET")
+
+    err := json.NewDecoder(r.Body).Decode(&recipe)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -146,13 +153,15 @@ func PostNewRecipe(w http.ResponseWriter, r *http.Request) {
 	// Location
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Location", r.URL.Path+"/"+id)
-    w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.WriteHeader(http.StatusCreated)
 }
 
 func PutUpdateRecipe(w http.ResponseWriter, r *http.Request) {
 	var recipe Recipe
-	err := json.NewDecoder(r.Body).Decode(&recipe)
+    w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Access-Control-Allow-Methods", "POST, DELETE, PUT, GET")
+
+    err := json.NewDecoder(r.Body).Decode(&recipe)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -177,13 +186,15 @@ func PutUpdateRecipe(w http.ResponseWriter, r *http.Request) {
 	// Location
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Location", r.URL.Path)
-    w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.WriteHeader(http.StatusCreated)
 }
 
 func DeleteRecipe(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	err := db.DeleteRecipe(params["id"])
+    w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Access-Control-Allow-Methods", "POST, DELETE, PUT, GET")
+
+    err := db.DeleteRecipe(params["id"])
 	if err != nil {
 		if err == errRecipeExistNot {
 			http.Error(w, err.Error(), http.StatusNotFound)
@@ -192,7 +203,13 @@ func DeleteRecipe(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	// 204 NoContent
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func SendOptions(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Access-Control-Allow-Methods", "POST, DELETE, PUT, GET")
 	// 204 NoContent
 	w.WriteHeader(http.StatusNoContent)
 }
@@ -217,6 +234,8 @@ func main() {
 	router.HandleFunc("/api/recipes", PostNewRecipe).Methods("POST")
 	router.HandleFunc("/api/recipes/{id}", PutUpdateRecipe).Methods("PUT")
 	router.HandleFunc("/api/recipes/{id}", DeleteRecipe).Methods("DELETE")
+	router.HandleFunc("/api/recipes", SendOptions).Methods("OPTIONS")
+	router.HandleFunc("/api/recipes/{id}", SendOptions).Methods("OPTIONS")
 	// TODO setup from config.json
 	fmt.Fprintf(os.Stderr, "%v\n", http.ListenAndServe(":4006", router))
 }

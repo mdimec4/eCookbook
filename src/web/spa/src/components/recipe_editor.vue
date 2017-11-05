@@ -56,6 +56,7 @@
 </template>
 
 <script>
+import { postOrPutRecipe } from './api'
 function getRecipe (id) {
   var jsonStr = `{ 
     "recipe_id": "37859", 
@@ -201,11 +202,15 @@ export default {
         return
       }
 
-      var jsonRecipe = JSON.stringify(this.recipe)
-      this.errorMsg = ''
-      console.log(jsonRecipe)
-      // redirect back to recipe menu
-      this.$router.push({name: 'RecipeEditorList'})
+      postOrPutRecipe(this.recipe).then((location) => {
+        this.errorMsg = ''
+        console.log('recipe url: ', location)
+        // redirect back to recipe menu
+        this.$router.push({name: 'RecipeEditorList'})
+      }, (err) => {
+        console.error('promise: ', err)
+        this.errorMsg = err
+      })
     }
   }
 }

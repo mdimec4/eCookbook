@@ -4,13 +4,14 @@
     <div v-for="recipe in recipes" v-bind:key="recipe.recipe_id">
       <router-link v-bind:to="{name: 'RecipeEditor', params: { id: recipe.recipe_id}}"  style="display:inline; width:20vw;"><p>{{recipe.title}}</p></router-link>
       <a v-if="recipe.source_url && recipe.source_url !=''" v-bind:href="recipe.source_url" style="display:inline; width:20vw;">source</a>
+      <span v-on:click="removeRecipe(recipe)"><icon style="color: red;"scale=1 name="remove"></icon></span>
     </div>
     <router-link  v-bind:to="{name: 'RecipeEditorNew'}"><button>Add New</button></router-link>
   </div>
 </template>
 
 <script>
-import { getRecipes } from './api'
+import { getRecipes, deleteRecipe } from './api'
 export default {
   name: 'recipe_editor_list',
   data () {
@@ -26,6 +27,15 @@ export default {
     }, (err) => console.error('promise: ', err))
   },
   methods: {
+    removeRecipe: function (recipe) {
+      deleteRecipe(recipe.recipe_id + 'xxx').then((status) => {
+        console.log(status)
+        // use filter to also remove succesfuly removed recipe
+        this.recipes = this.recipes.filter((recipeFilter) => {
+          return recipeFilter.recipe_id !== recipe.recipe_id
+        })
+      }, (err) => console.error('promise: ', err))
+    }
   }
 }
 
