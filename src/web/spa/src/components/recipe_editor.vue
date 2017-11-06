@@ -51,6 +51,7 @@
     </div>
 
 
+    <router-link  v-bind:to="{name: 'RecipeEditorList'}"><button>Cancel</button></router-link>
     <button v-on:click="submit()">Submit</button>
   </div>
 </template>
