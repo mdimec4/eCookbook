@@ -6,9 +6,11 @@ import (
 	"errors"
 	"fmt"
 	"hash/crc32"
+	"io/ioutil"
 	"math/big"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -90,10 +92,10 @@ func newRecipe(recipe Recipe) (string, error) {
 	return recipe.RecipeID, err
 }
 
-func GetRecipesList(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Access-Control-Allow-Origin", "*")
+func getRecipesList(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
-    l, err := db.ListRecipes()
+	l, err := db.ListRecipes()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -108,12 +110,12 @@ func GetRecipesList(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-func GetRecipe(w http.ResponseWriter, r *http.Request) {
+func getRecipe(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-    w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
-    recipe, err := db.GetRecipe(params["id"])
-    if err != nil {
+	recipe, err := db.GetRecipe(params["id"])
+	if err != nil {
 		if err == errRecipeExistNot {
 			http.Error(w, err.Error(), http.StatusNotFound)
 			return
@@ -131,11 +133,11 @@ func GetRecipe(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-func PostNewRecipe(w http.ResponseWriter, r *http.Request) {
+func postNewRecipe(w http.ResponseWriter, r *http.Request) {
 	var recipe Recipe
-    w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
-    err := json.NewDecoder(r.Body).Decode(&recipe)
+	err := json.NewDecoder(r.Body).Decode(&recipe)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -153,11 +155,11 @@ func PostNewRecipe(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 }
 
-func PutUpdateRecipe(w http.ResponseWriter, r *http.Request) {
+func putUpdateRecipe(w http.ResponseWriter, r *http.Request) {
 	var recipe Recipe
-    w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
-    err := json.NewDecoder(r.Body).Decode(&recipe)
+	err := json.NewDecoder(r.Body).Decode(&recipe)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -185,11 +187,11 @@ func PutUpdateRecipe(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 }
 
-func DeleteRecipe(w http.ResponseWriter, r *http.Request) {
+func deleteRecipe(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-    w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
-    err := db.DeleteRecipe(params["id"])
+	err := db.DeleteRecipe(params["id"])
 	if err != nil {
 		if err == errRecipeExistNot {
 			http.Error(w, err.Error(), http.StatusNotFound)
@@ -202,12 +204,36 @@ func DeleteRecipe(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func SendOptions(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Access-Control-Allow-Origin", "*")
-    w.Header().Set("Access-Control-Allow-Methods", "POST, DELETE, PUT, GET, OPTIONS")
-    w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+func sendOptions(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, DELETE, PUT, GET, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	// 204 NoContent
 	w.WriteHeader(http.StatusNoContent)
+}
+
+const staticPath = "./dist"
+
+func staticHandleFunc(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(r.URL.Path)
+	if _, err := os.Stat(staticPath + r.URL.Path); os.IsNotExist(err) {
+		fmt.Println("no exist")
+		// allow paths that will be handled by vue2.js router
+		if !(strings.HasPrefix(r.URL.Path, "/device") ||
+			strings.HasPrefix(r.URL.Path, "/recipe_editor")) {
+			fmt.Println("ERROR no vue router")
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
+		fmt.Println("vue ruter will handle -> redirect to index.html")
+		// all non file path url's are redirected to vue2.js app.
+		// It's vue2.js router responsibility to gandle them.
+		dat, _ := ioutil.ReadFile(staticPath + "/index.html")
+		w.Write(dat)
+		return
+	}
+	fmt.Println("file server")
+	http.FileServer(http.Dir(staticPath)).ServeHTTP(w, r)
 }
 
 func main() {
@@ -223,15 +249,19 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Setting database connection: %s\n", err)
 		os.Exit(1)
 	}
+	m := http.NewServeMux()
+	m.HandleFunc("/", staticHandleFunc)
 	// TODO implement authentication
 	router := mux.NewRouter()
-	router.HandleFunc("/api/recipes", GetRecipesList).Methods("GET")
-	router.HandleFunc("/api/recipes/{id}", GetRecipe).Methods("GET")
-	router.HandleFunc("/api/recipes", PostNewRecipe).Methods("POST")
-	router.HandleFunc("/api/recipes/{id}", PutUpdateRecipe).Methods("PUT")
-	router.HandleFunc("/api/recipes/{id}", DeleteRecipe).Methods("DELETE")
-	router.HandleFunc("/api/recipes", SendOptions).Methods("OPTIONS")
-	router.HandleFunc("/api/recipes/{id}", SendOptions).Methods("OPTIONS")
+	router.HandleFunc("/api/recipes", getRecipesList).Methods("GET")
+	router.HandleFunc("/api/recipes/{id}", getRecipe).Methods("GET")
+	router.HandleFunc("/api/recipes", postNewRecipe).Methods("POST")
+	router.HandleFunc("/api/recipes/{id}", putUpdateRecipe).Methods("PUT")
+	router.HandleFunc("/api/recipes/{id}", deleteRecipe).Methods("DELETE")
+	router.HandleFunc("/api/recipes", sendOptions).Methods("OPTIONS")
+	router.HandleFunc("/api/recipes/{id}", sendOptions).Methods("OPTIONS")
+
+	m.Handle("/api/", router)
 	// TODO setup from config.json
-	fmt.Fprintf(os.Stderr, "%v\n", http.ListenAndServe(":4006", router))
+	fmt.Fprintf(os.Stderr, "%v\n", http.ListenAndServe(":4006", m))
 }
