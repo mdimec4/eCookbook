@@ -84,7 +84,7 @@ export default {
 }
 </script>
 <style scoped>
-
+/*
  * {
     margin: 0px;
     padding: 0px;
@@ -98,7 +98,12 @@ body {
     overflow: hidden;
     font-family: 'Sanchez', serif;
     font-size: 120%;
-}
+}*/
+.recipe_view_browser {
+ position: fixed;
+ top: 0px;
+ left: 0px;
+};
 #title {
     width: 100vw;
     height: 10vh;
