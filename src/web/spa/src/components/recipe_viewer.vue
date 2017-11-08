@@ -325,6 +325,7 @@ export default {
 }
 </script>
 <style scoped>
+/*
  * {
     margin: 0px;
     padding: 0px;
@@ -343,8 +344,14 @@ body {
   margin: 0px;
   padding: 0px;
   border-width: 0px;
+};*/
+.recipe_viewer {
+  position: fixed;
+  left: 0px;
+  top: 0px;
+  width: 100vw;
+  height: 100vh;
 };
-
 .transperentPrevNext {
   position: absolute;
   background: transparent;
@@ -362,7 +369,7 @@ body {
 
 #menu {
     width: 100vw;
-    height: 5vh;
+    height: 10vh;
 }
 #title {
     width: 100vw;
@@ -373,12 +380,14 @@ body {
     height: 5vh;
 }
 #content {
+    position: fixed;
     padding-left: 5vw;
     text-align: left;
     display: block;
     overflow: hidden;
+    bottom: calc(5vh + 2px); /*2px extra for position-info-container borders*/
     width: 95vw;
-    height: 75vh;
+    height: 60vh;
 };
 #position-info-container {
   border: solid;
