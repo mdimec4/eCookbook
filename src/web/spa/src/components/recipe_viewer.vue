@@ -2,7 +2,7 @@
   <div class="recipe_viewer">
     <!-- header buttons -->
     <div id="menu">
-      <router-link v-bind:to="{name: 'RecipeViewBrowser'}" style="color: black;"><icon scale=2 name="home"></icon></router-link>
+      <router-link v-bind:to="{name: 'RecipeViewBrowser'}" style="color: black;"><icon scale=3 name="home"></icon></router-link>
       <!--
         <span v-if="this.rPagePrevShow" v-on:click="buttonBack"><icon scale=2 name="arrow-left"></icon></span>
       <span v-if="this.rPageNextShow" v-on:click="buttonNext"><icon scale=2 name="arrow-right"></icon></span>
