@@ -325,32 +325,13 @@ export default {
 }
 </script>
 <style scoped>
-/*
- * {
-    margin: 0px;
-    padding: 0px;
-    border-width: 0px;
- };
-html {
-	height:100%;
-};
-
-body {
-  color: #000;
-  overflow: hidden;
-  font-family: 'Sanchez', serif;
-  font-size: 120%;
-
-  margin: 0px;
-  padding: 0px;
-  border-width: 0px;
-};*/
 .recipe_viewer {
   position: fixed;
   left: 0px;
   top: 0px;
   width: 100vw;
   height: 100vh;
+   font-size: 150%;
 };
 .transperentPrevNext {
   position: absolute;
