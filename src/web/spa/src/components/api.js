@@ -1,4 +1,5 @@
-var myRemote = 'http://localhost:4006'
+// var myRemote = 'http://localhost:4006'
+var myRemote = ''
 
 export function getRecipes (id) {
   return new Promise((resolve, reject) => {

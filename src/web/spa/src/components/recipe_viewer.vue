@@ -33,19 +33,19 @@
     <!--print content-->
     <div ref="content" id="content">
       <div v-if="rwhat==='ingredients'">
-        <ul ref="textSizeHelp">
+        <ul>
           <li v-for="ingredient in recipe.ingredients">
             {{ ingredient }}
           </li>
         </ul>
       </div>
-      <div v-else-if="rwhat==='instructions'" ref="textSizeHelp">
-        <div v-for="line in recipe.instructions[instPage].instruction.split('\n')">
+      <div v-else-if="rwhat==='instructions'">
+       <p v-for="line in recipe.instructions[instPage].instruction.split('\n')">
           {{line}}
-        </div>
+        </p>
       </div>
       <div v-else-if="rwhat==='tips'">
-        <ul ref="textSizeHelp">
+        <ul>
           <li v-for="tip in recipe.tips">
             {{ tip }}
           </li>
@@ -294,13 +294,11 @@ export default {
     },
     scrollUp: function (event) {
       var ce = this.$refs.content
-      var lineHeight = 1
-      // read text line height
-      if (this.$refs.textSizeHelp.hasChildNodes()) {
-        lineHeight = this.$refs.textSizeHelp.childNodes[0].clientHeight
-      }
+
+      let scrollSize = Math.floor(ce.clientHeight * 0.8)
+      scrollSize = scrollSize > 0 ? scrollSize : ce.clientHeight
       if (ce.scrollTop > 0) {
-        var newScroll = ce.scrollTop - (Math.floor(ce.clientHeight / lineHeight) * lineHeight)
+        var newScroll = ce.scrollTop - scrollSize
 
         if (newScroll < 0) {
           newScroll = 0
@@ -311,15 +309,11 @@ export default {
     },
     scrollDown: function (event) {
       var ce = this.$refs.content
-      var lineHeight = 1
-      // read text line height
-      if (this.$refs.textSizeHelp.hasChildNodes()) {
-        lineHeight = this.$refs.textSizeHelp.childNodes[0].clientHeight
-      }
+      let scrollSize = Math.floor(ce.clientHeight * 0.8)
+      scrollSize = scrollSize > 0 ? scrollSize : ce.clientHeigh
+
       if (ce.scrollHeight - ce.scrollTop > ce.clientHeight) {
-        var newScroll = ce.scrollTop + ce.clientHeight
-        // make scroll multiple of lineHeight
-        newScroll = Math.floor(newScroll / lineHeight) * lineHeight
+        var newScroll = ce.scrollTop + scrollSize
         if (newScroll > (ce.scrollHeight - ce.clientHeight)) {
           newScroll = ce.scrollHeight - ce.clientHeight
         }
