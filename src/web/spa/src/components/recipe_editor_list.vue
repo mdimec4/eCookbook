@@ -1,10 +1,11 @@
 <template>
   <div class="recipe_editor_list">
     <h1>Edit recipes</h1>
-    <div v-for="recipe in recipes" v-bind:key="recipe.recipe_id">
-      <router-link v-bind:to="{name: 'RecipeEditor', params: { id: recipe.recipe_id}}"  style="display:inline; width:20vw;"><p>{{recipe.title}}</p></router-link>
-      <a v-if="recipe.source_url && recipe.source_url !=''" v-bind:href="recipe.source_url" style="display:inline; width:20vw;">source</a>
-      <span v-on:click="removeRecipe(recipe)"><icon style="color: red;"scale=1 name="remove"></icon></span>
+    <div v-for="recipe in recipes" v-bind:key="recipe.recipe_id" id="container">
+      <router-link v-bind:to="{name: 'RecipeEditor', params: { id: recipe.recipe_id}}"  class="container-part"><p>{{recipe.title}}</p></router-link>
+      <a v-if="recipe.source_url && recipe.source_url !=''" v-bind:href="recipe.source_url" class="container-part">source</a>
+      <div v-else  class="container-part">-</div>
+      <div v-on:click="removeRecipe(recipe)" class="container-part"><icon style="color: red;" scale=1 name="remove"></icon></div>
     </div>
     <router-link  v-bind:to="{name: 'RecipeEditorNew'}"><button>Add New</button></router-link>
   </div>
@@ -44,5 +45,20 @@ export default {
 <style scoped>
 h1, h2 {
   font-weight: normal;
+};
+#container {
+  border: solid;
+  border-width: 1px 1px 0px 0px;
+  border-color:black;
+  width: calc(100% - 1px);
+  height: calc(10vh - 2px);
+};
+.container-part {
+  float:left;
+  border: solid;
+  border-width: 0px 0px 1px 1px;
+  border-color:black;
+  width: calc(33.33% - 1px); /* subtract 1px border width */
+  height: 100%;
 };
 </style>
