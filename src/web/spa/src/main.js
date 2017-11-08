@@ -30,7 +30,7 @@ const routes = [
 // route for the RecipeEditor passing in params
 {path: '/recipe_editor/:id', component: RecipeEditor, name: 'RecipeEditor'},
 // route for the RecipeViewBrowser passing in params
-{ path: '/device/recipe_view_browser', component: RecipeViewBrowser, name: 'RecipeViewBrowser' },
+{ path: '/device', component: RecipeViewBrowser, name: 'RecipeViewBrowser' },
 // route for the RecipeViewer passing in params
 { path: '/device/recipe_viewer/:id', component: RecipeViewer, name: 'RecipeViewer' }
 ]

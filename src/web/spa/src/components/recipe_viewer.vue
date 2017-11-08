@@ -335,16 +335,22 @@ export default {
     margin: 0px;
     padding: 0px;
     border-width: 0px;
- }
+ };
 html {
 	height:100%;
-}
+};
+
 body {
-color: #000;
-overflow: hidden;
-font-family: 'Sanchez', serif;
-font-size: 120%;
-}
+  color: #000;
+  overflow: hidden;
+  font-family: 'Sanchez', serif;
+  font-size: 120%;
+
+  margin: 0px;
+  padding: 0px;
+  border-width: 0px;
+};
+
 .transperentPrevNext {
   position: absolute;
   background: transparent;
@@ -377,7 +383,7 @@ font-size: 120%;
     text-align: left;
     display: block;
     overflow: hidden;
-    width: 100vw;
+    width: 95vw;
     height: 75vh;
 };
 #position-info-container {
