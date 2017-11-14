@@ -1,0 +1,2 @@
+docker run -d --restart=always -e POSTGRES_PASSWORD=chef -e POSTGRES_USER=chef -e POSTGRES_DB=cookbook --name chef_postgres postgres
+docker run --restart=always -p 4006:4006 --link chef_postgres:db2_1 --name chef chef
