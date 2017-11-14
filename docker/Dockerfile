@@ -11,7 +11,7 @@ ENV GOLANG_CPU amd64
 
 
 RUN apt-get update && \
-    apt-get install -y build-essential && \
+    apt-get install -y --no-install-recommends build-essential && \
     nodejs \
     npm \
     apt-get clean
@@ -42,7 +42,7 @@ ENV PATH /usr/local/go/bin:$PATH
 #    ln -s /usr/local/bin/node /usr/local/bin/nodejs
 
 RUN apt-get update && \
-apt-get install -y \
+apt-get install -y --no-install-recommends \
 nodejs \
 npm &&
 apt-get clean && \
