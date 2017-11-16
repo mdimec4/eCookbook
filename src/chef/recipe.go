@@ -243,12 +243,12 @@ func main() {
 	var (
 		err error
 	)
-	params := map[string]string{"user": getEnvConf("DB_USER", "chef"),
-		"dbname":   getEnvConf("DB_NAME", "cookbook"),
-		"password": getEnvConf("DB_PASS", "chef"),
-		"sslmode":  getEnvConf("DB_SSLMODE", "disable"),
-		"host":     getEnvConf("DB_HOST", "localhost"),
-		"port":     getEnvConf("DB_PORT", "5432")}
+	params := map[string]string{"user": getEnvConf("CHEF_DB_USER", "chef"),
+		"dbname":   getEnvConf("CHEF_DB_NAME", "cookbook"),
+		"password": getEnvConf("CHEF_DB_PASS", "chef"),
+		"sslmode":  getEnvConf("CHEF_DB_SSLMODE", "disable"),
+		"host":     getEnvConf("CHEF_DB_HOST", "localhost"),
+		"port":     getEnvConf("CHEF_DB_PORT", "5432")}
 	db, err = NewDatabaseConnection("postgres", params)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Setting database connection: %s\n", err)
@@ -267,5 +267,5 @@ func main() {
 	router.HandleFunc("/api/recipes/{id}", sendOptions).Methods("OPTIONS")
 
 	m.Handle("/api/", router)
-	fmt.Fprintf(os.Stderr, "%v\n", http.ListenAndServe(getEnvConf("LISTEN_ADDR", ":4006"), m))
+	fmt.Fprintf(os.Stderr, "%v\n", http.ListenAndServe(getEnvConf("CHEF_LISTEN_ADDR", ":4006"), m))
 }
