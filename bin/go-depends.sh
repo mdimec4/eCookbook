@@ -4,5 +4,8 @@
 while read line          
 do
     echo "  '$line'"
-    go get $line
+    if ! go get $line
+    then
+	    exit 1
+    fi
 done < $1

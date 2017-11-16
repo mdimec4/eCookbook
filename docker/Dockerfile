@@ -1,54 +1,49 @@
-FROM ubuntu:16.04 #FROM armv7/armhf-ubuntu:16.10                                                
-# phusion/baseimage:0.9.19 is first release based on ubuntu 16.04.               
-#TODO check if there is newer version of the image, that we can use
+FROM ubuntu:16.04 
+#FROM armv7/armhf-ubuntu:16.10
 
-ENV GOLANG_VERSION 1.9
-ENV GOLANG_OS linux
-ENV GOLANG_CPU amd64
-#ENV NODE_VERSION ${NODE_VERSION:-"7.2.1"}
+ADD . /tmp/repo
+WORKDIR /opt/chef
 
-
-
-
+# golang node.js npm
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends build-essential && \
+    apt-get install -y --no-install-recommends build-essential \
     nodejs \
     npm \
-    apt-get clean
-
-# dumb init
-RUN cd /tmp && \
+    golang \
+    wget \ 
+    git && \
+    #DEBUG
+    ls -lh /usr/bin/node* && \
+    # fix node vs. nodejs
+    ln -s /usr/bin/nodejs /usr/bin/node && \
+    # install dumb init
+    cd /tmp && \
     wget -P /tmp https://github.com/Yelp/dumb-init/archive/v1.2.0.tar.gz && \
     tar xzf /tmp/v1.2.0.tar.gz -C /tmp/ && \
     cd /tmp/dumb-init-1.2.0 && \
     make && \
     cp dumb-init /sbin && \
     chmod +x /sbin/dumb-init && \
-    cd ~ && \
-    rm -rf /tmp/dumb-init-1.2.0 /tmp/v1.2.0.tar.gz
-
-
-
-# install golang
-RUN curl -sSL https://golang.org/dl/go$GOLANG_VERSION.$GOLANG_OS-$GOLANG_CPU.tar.gz | tar -v -C /usr/local -xz
-ENV GOROOT /usr/local/go
-ENV PATH /usr/local/go/bin:$PATH
-
-# install node
-# nodejs
-#RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.xz" && \
-#   tar xJf "node-v$NODE_VERSION-linux-x64.tar.xz" -C /usr/local --strip-components=1 && \
-#    rm "node-v$NODE_VERSION-linux-x64.tar.xz"  && \
-#    ln -s /usr/local/bin/node /usr/local/bin/nodejs
-
-RUN apt-get update && \
-apt-get install -y --no-install-recommends \
-nodejs \
-npm &&
-apt-get clean && \
-ln -s /usr/bin/node /usr/bin/nodejs
-
-
+    cd / && \
+    rm -rf /tmp/dumb-init-1.2.0 /tmp/v1.2.0.tar.gz && \
+    # build
+    cd /tmp/repo && \
+    make test && \
+    make && \
+    mkdir -p /opt/chef && \
+    cp -r ./build/* /opt/chef && \
+    cd / && \
+    rm -r /tmp/repo && \
+    # cleanup
+    apt-get remove -y build-essential \
+    nodejs \
+    npm \
+    golang \
+    wget \
+    git && \
+    rm /usr/bin/node && \
+    apt-get autoremove -y && \
+    apt-get clean
 
 
 # Runs "/usr/bin/dumb-init -- /my/script --with --args"
