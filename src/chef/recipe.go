@@ -105,7 +105,7 @@ func getRecipesList(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	fmt.Println("str ", string(b))
+	// fmt.Println("str ", string(b))
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(b)
 }
@@ -128,7 +128,7 @@ func getRecipe(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	fmt.Println("str ", string(b))
+	// fmt.Println("str ", string(b))
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(b)
 }
@@ -215,35 +215,40 @@ func sendOptions(w http.ResponseWriter, r *http.Request) {
 const staticPath = "./dist"
 
 func staticHandleFunc(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(r.URL.Path)
 	if _, err := os.Stat(staticPath + r.URL.Path); os.IsNotExist(err) {
-		fmt.Println("no exist")
 		// allow paths that will be handled by vue2.js router
 		if !(strings.HasPrefix(r.URL.Path, "/device") ||
 			strings.HasPrefix(r.URL.Path, "/recipe_editor")) {
-			fmt.Println("ERROR no vue router")
+			fmt.Fprintf(os.Stderr, "%s\n", err)
 			http.Error(w, err.Error(), http.StatusNotFound)
 			return
 		}
-		fmt.Println("vue ruter will handle -> redirect to index.html")
 		// all non file path url's are redirected to vue2.js app.
 		// It's vue2.js router responsibility to gandle them.
 		dat, _ := ioutil.ReadFile(staticPath + "/index.html")
 		w.Write(dat)
 		return
 	}
-	fmt.Println("file server")
 	http.FileServer(http.Dir(staticPath)).ServeHTTP(w, r)
+}
+
+func getEnvConf(envName, defVal string) string {
+	if v := os.Getenv(envName); v != "" {
+		return v
+	}
+	return defVal
 }
 
 func main() {
 	var (
 		err error
 	)
-	// TODO use config.json file
-	params := map[string]string{"user": "chef", "dbname": "cookbook",
-		"password": "chef", "sslmode": "disable", "host": "localhost",
-		"port": "5432"}
+	params := map[string]string{"user": getEnvConf("DB_USER", "chef"),
+		"dbname":   getEnvConf("DB_NAME", "cookbook"),
+		"password": getEnvConf("DB_PASS", "chef"),
+		"sslmode":  getEnvConf("DB_SSLMODE", "disable"),
+		"host":     getEnvConf("DB_HOST", "localhost"),
+		"port":     getEnvConf("DB_PORT", "5432")}
 	db, err = NewDatabaseConnection("postgres", params)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Setting database connection: %s\n", err)
@@ -262,6 +267,5 @@ func main() {
 	router.HandleFunc("/api/recipes/{id}", sendOptions).Methods("OPTIONS")
 
 	m.Handle("/api/", router)
-	// TODO setup from config.json
-	fmt.Fprintf(os.Stderr, "%v\n", http.ListenAndServe(":4006", m))
+	fmt.Fprintf(os.Stderr, "%v\n", http.ListenAndServe(getEnvConf("LISTEN_ADDR", ":4006"), m))
 }

@@ -47,7 +47,7 @@ RUN apt-get update && \
 
 
 # Runs "/usr/bin/dumb-init -- /my/script --with --args"
-ENTRYPOINT ["/usr/bin/dumb-init", "--"]
+ENTRYPOINT ["/sbin/dumb-init", "--"]
 # or if you use --rewrite or other cli flags
 # ENTRYPOINT ["dumb-init", "--rewrite", "2:3", "--"]
 # CMD ["/my/script", "--with", "--args"]
