@@ -1,2 +1,4 @@
+```sh
 docker run -d --restart=always -e POSTGRES_PASSWORD=chef -e POSTGRES_USER=chef -e POSTGRES_DB=cookbook --name chef_postgres postgres
 docker run -d --restart=always -e DB_HOST=db2_1 -p 4006:4006 --link chef_postgres:db2_1 --name chef chef
+```
