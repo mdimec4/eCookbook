@@ -1,13 +1,14 @@
 https://scotch.io/tutorials/how-to-build-a-simple-single-page-application-using-vue-2-part-1
+https://scotch.io/tutorials/how-to-build-a-simple-single-page-application-using-vue-2-part-2
+
 sudo npm install -g vue-cli
 vue init webpack spa
 //change directory to the folder
-  cd spa
-  //install all required npm modules
-    npm install
-    //run the development server
-      npm run dev
+cd spa
+//install all required npm modules
+npm install
+//run the development server
+npm run dev
 
 npm install vue-router --save
 
-https://scotch.io/tutorials/how-to-build-a-simple-single-page-application-using-vue-2-part-2

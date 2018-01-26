@@ -1,4 +1,0 @@
-export OLD_GOPATH=$GOPATH
-export OLD_PROMPT=$PROMPT
-export GOPATH=`pwd`
-export PROMPT=$PROMPT"(vss) "

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 pushd .
-cd src/web/spa
+cd spa
 if ! npm install
 then
 	exit 1
@@ -12,4 +12,4 @@ then
 fi
 popd
 mkdir -p build
-cp -r src/web/spa/dist ./build
+cp -r spa/dist ./build
