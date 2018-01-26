@@ -1,0 +1,6 @@
+http://allrecipes.com/recipe/231495/texas-boiled-beer-shrimp/?internalSource=previously%20viewed&referringContentType=home%20page&clickId=cardslot%205
+
+recipe_id <- hash "allrecipes_{recipeID}"
+publisher: "Allrecipes.com"
+source_url: {url}
+oil
