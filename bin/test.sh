@@ -1,10 +1,8 @@
 #!/bin/bash
 
-source ./bin/activate
-source bin/go-depends.sh requirements.txt
-if ! go test chef
+go get -u github.com/golang/dep/cmd/dep
+dep ensure -v
+if ! go test eCoockbook/cmd/chef
 then
-    source ./bin/deactivate
     exit 1
 fi
-source ./bin/deactivate

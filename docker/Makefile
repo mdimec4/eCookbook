@@ -10,8 +10,8 @@ all: docker
 docker:
 	tar -czh ../bin \
 		$(dockerfile) \
-		../requirements.txt \
-		../src \
+		../cmd \
+		../spa\
 		../Makefile \
 	| docker build -t chef$(docker_tag) -
 

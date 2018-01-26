@@ -1,8 +1,11 @@
 FROM ubuntu:16.04 
 #FROM armv7/armhf-ubuntu:16.10
 
-ADD . /tmp/repo
+ADD . /tmp/repo/src/eCookbook
 WORKDIR /opt/chef
+
+ENV GOPATH="/tmp/repo"
+ENV PATH="/tmp/repo/bin:${PATH}"
 
 # golang node.js npm
 RUN apt-get update && \
@@ -27,7 +30,7 @@ RUN apt-get update && \
     cd / && \
     rm -rf /tmp/dumb-init-1.2.0 /tmp/v1.2.0.tar.gz && \
     # build
-    cd /tmp/repo && \
+    cd /tmp/repo/src/eCookbook && \
     make test && \
     make && \
     mkdir -p /opt/chef && \
