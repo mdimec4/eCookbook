@@ -19,6 +19,15 @@ func checkAttr(attr []html.Attribute, key, val string) bool {
 	return false
 }
 
+func noAttr(attr []html.Attribute, key, val string) bool {
+	for _, a := range attr {
+		if a.Key == key && a.Val == val {
+			return false
+		}
+	}
+	return true
+}
+
 func findTokenText(z *html.Tokenizer, dataAtom atom.Atom, key, value string) (string, error) {
 	return "", nil
 }
@@ -57,7 +66,8 @@ func getRecipe(url string) error {
 					return errors.New("allrecipes parser: ingredient text was expected here")
 				}
 			} else if token.DataAtom == atom.Span &&
-				checkAttr(token.Attr, "class", "recipe-directions__list--item") {
+				checkAttr(token.Attr, "class", "recipe-directions__list--item") &&
+				noAttr(token.Attr, "ng-bind", "model.itemNote") {
 				// did we hit one of the instructions
 				// <span class="recipe-directions__list--item" ...>
 				tt := z.Next()
