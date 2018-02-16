@@ -1,86 +1,72 @@
 package main
 
 import (
+	"errors"
 	"fmt"
-	"golang.org/x/net/html" //https://stackoverflow.com/questions/30109061/golang-parse-html-extract-all-content-with-body-body-tags
-	//"io/ioutil"
-	//"golang.org/x/net/html/atom"
+	"io"
 	"net/http"
+
+	"golang.org/x/net/html"
+	"golang.org/x/net/html/atom"
 )
 
-func getRecipe() (*html.Node, error) {
+func checkAttr(attr []html.Attribute, key, val string) bool {
+	for _, a := range attr {
+		if a.Key == key && a.Val == val {
+			return true
+		}
+	}
+	return false
+}
+
+func getRecipe() error {
 	resp, err := http.Get("http://allrecipes.com/recipe/231495/texas-boiled-beer-shrimp/")
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer resp.Body.Close()
 	//body, err := ioutil.ReadAll(resp.Body)
-	return html.Parse(resp.Body)
-}
+	z := html.NewTokenizer(resp.Body)
+	for {
+		tt := z.Next()
+		switch tt {
+		case html.ErrorToken:
+			if z.Err() == io.EOF {
+				return nil
+			}
+			return z.Err()
+		case html.StartTagToken:
+			token := z.Token()
+			// did we hit one of ingredients
+			// <span class="recipe-ingred_txt added" ... itemprop="ingredients">
+			if token.DataAtom == atom.Span &&
+				checkAttr(token.Attr, "itemprop", "ingredients") {
+				fmt.Println("-->>", token.DataAtom)
+				// next token should be text of the ingredient span
+				tt = z.Next()
+				switch tt {
+				case html.TextToken:
+					token = z.Token()
+					fmt.Println("next>>", string(z.Raw()))
+					fmt.Println("data>>", token.Data)
+					fmt.Println("atom>>", token.DataAtom)
+				default:
+					errors.New("allrecipe html parser: ingredient text was expected")
 
-func loopSiblings(n *html.Node, f func(c *html.Node) bool) bool {
-	for c := n; c != nil; c = c.NextSibling {
-		if !f(c) {
-			return false
+				}
+			}
 		}
+
 	}
-	return true
-}
-
-func loopChildren(n *html.Node, f func(*html.Node) bool) bool {
-	for c := n.FirstChild; c != nil; c = c.FirstChild {
-		if !f(c) {
-			return false
-		}
-	}
-	return true
-}
-
-func crawlNodes(nIn *html.Node, f func(*html.Node) bool) {
-	var crawlNodesHelper func(cont bool, n *html.Node) bool
-
-	crawlNodesHelper = func(cont bool, n *html.Node) bool {
-		loopSiblings(n, func(ns *html.Node) bool {
-			return loopChildren(ns, func(cn *html.Node) bool {
-				return crawlNodesHelper(f(cn), cn)
-			})
-		})
-		return true
-	}
-
-	crawlNodesHelper(true, nIn)
+	return nil
 }
 
 func main() {
 	// var ingredients []string
-	documentNode, err := getRecipe()
+	err := getRecipe()
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println(err) // TODO stderr
 		return
 	}
-	/*
-		htmlNode := documentNode.FirstChild
 
-		//find body
-		var bodyNode *html.Node
-		loopSiblings(htmlNode.NextSibling.FirstChild, func(n *html.Node) bool {
-			if n.DataAtom == atom.Body {
-				bodyNode = n
-				return false
-			}
-			return true
-		})
-
-		loopSiblings(bodyNode.FirstChild, func(n *html.Node) bool {
-			fmt.Println(n.DataAtom, n)
-			return true
-		})
-	*/
-	crawlNodes(documentNode, func(n *html.Node) bool {
-		if n == nil {
-			fmt.Println(n, " it is nil")
-		}
-		fmt.Println(n)
-		return true
-	})
 }
