@@ -10,6 +10,21 @@ import (
 	"golang.org/x/net/html/atom"
 )
 
+type Recipe struct {
+	RecipeID     string   `json:"recipe_id"`
+	Publisher    string   `json:"publisher"`
+	SourceURL    string   `json:"source_url"`
+	Title        string   `json:"title"`
+	ImageURL     string   `json:"image_url"`
+	Tags         []string `json:"tags"`
+	Ingredients  []string `json:"ingredients"`
+	Instructions []struct {
+		ImageURL    string `json:"image_url"`
+		Instruction string `json:"instruction"`
+	} `json:"instructions"`
+	Tips []string `json:"tips"`
+}
+
 func checkAttr(attr []html.Attribute, key, val string) bool {
 	for _, a := range attr {
 		if a.Key == key && a.Val == val {
