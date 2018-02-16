@@ -18,8 +18,16 @@ func getRecipe() (*html.Node, error) {
 	return html.Parse(resp.Body)
 }
 
-func loopChildren(parentNode *html.Node, f func(c *html.Node) bool) {
-	for c := parentNode.FirstChild; c != nil; c = c.NextSibling {
+func loopSiblings(n *html.Node, f func(c *html.Node) bool) {
+	for c := n; c != nil; c = c.NextSibling {
+		if !f(c) {
+			break
+		}
+	}
+}
+
+func loopChildren(n *html.Node, f func(c *html.Node) bool) {
+	for c := n; c != nil; c = c.FirstChild {
 		if !f(c) {
 			break
 		}
@@ -37,7 +45,7 @@ func main() {
 
 	//find body
 	var bodyNode *html.Node
-	loopChildren(htmlNode.NextSibling, func(n *html.Node) bool {
+	loopSiblings(htmlNode.NextSibling.FirstChild, func(n *html.Node) bool {
 		if n.DataAtom == atom.Body {
 			bodyNode = n
 			return false
@@ -45,7 +53,7 @@ func main() {
 		return true
 	})
 
-	loopChildren(bodyNode, func(n *html.Node) bool {
+	loopSiblings(bodyNode.FirstChild, func(n *html.Node) bool {
 		fmt.Println(n.DataAtom, n)
 		return true
 	})
