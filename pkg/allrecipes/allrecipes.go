@@ -32,8 +32,7 @@ func findTokenText(z *html.Tokenizer, dataAtom atom.Atom, key, value string) (st
 		case html.ErrorToken:
 			return "", z.Err()
 		default:
-			return "", errors.New("allrecipe html parser: " +
-				key + " : " + value + "text was expected")
+			return "", errors.New("text was expected")
 
 		}
 	}
@@ -57,13 +56,22 @@ func getRecipe(url string) error {
 			}
 			return z.Err()
 		case html.StartTagToken:
-			// did we hit one of ingredients
+			// did we hit one of the ingredients
 			// <span class="recipe-ingred_txt added" ... itemprop="ingredients">
 			if ingredient, err := findTokenText(z,
 				atom.Span, "itemprop", "ingredients"); err != nil {
-				return err
+				return fmt.Errorf("allrecipes ingredients parser:")
 			} else if ingredient != "" {
 				fmt.Println("ingredient>>", ingredient)
+			}
+
+			// did we hit one of the instructions
+			// <span class="recipe-ingred_txt added" ... itemprop="ingredients">
+			if instruction, err := findTokenText(z,
+				atom.Span, "class", "recipe-directions__list--item"); err != nil {
+				return fmt.Errorf("allrecipes instructions parser:")
+			} else if instruction != "" {
+				fmt.Println("instruction>>", instruction)
 			}
 
 		}
