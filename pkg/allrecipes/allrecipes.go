@@ -10,19 +10,21 @@ import (
 	"golang.org/x/net/html/atom"
 )
 
+type InstructionType struct {
+	ImageURL    string `json:"image_url"`
+	Instruction string `json:"instruction"`
+}
+
 type Recipe struct {
-	RecipeID     string   `json:"recipe_id"`
-	Publisher    string   `json:"publisher"`
-	SourceURL    string   `json:"source_url"`
-	Title        string   `json:"title"`
-	ImageURL     string   `json:"image_url"`
-	Tags         []string `json:"tags"`
-	Ingredients  []string `json:"ingredients"`
-	Instructions []struct {
-		ImageURL    string `json:"image_url"`
-		Instruction string `json:"instruction"`
-	} `json:"instructions"`
-	Tips []string `json:"tips"`
+	RecipeID     string            `json:"recipe_id"`
+	Publisher    string            `json:"publisher"`
+	SourceURL    string            `json:"source_url"`
+	Title        string            `json:"title"`
+	ImageURL     string            `json:"image_url"`
+	Tags         []string          `json:"tags"`
+	Ingredients  []string          `json:"ingredients"`
+	Instructions []InstructionType `json:"instructions"`
+	Tips         []string          `json:"tips"`
 }
 
 func checkAttr(attr []html.Attribute, key, val string) bool {
@@ -34,10 +36,11 @@ func checkAttr(attr []html.Attribute, key, val string) bool {
 	return false
 }
 
-func getRecipe(url string) error {
+func getRecipe(url string) (Recipe, error) {
+	ret := Recipe{}
 	resp, err := http.Get(url)
 	if err != nil {
-		return err
+		return ret, err
 	}
 	defer resp.Body.Close()
 	//body, err := ioutil.ReadAll(resp.Body)
@@ -47,9 +50,9 @@ func getRecipe(url string) error {
 		switch tt {
 		case html.ErrorToken:
 			if z.Err() == io.EOF {
-				return nil
+				return ret, nil
 			}
-			return z.Err()
+			return ret, z.Err()
 		case html.StartTagToken:
 			token := z.Token()
 			if token.DataAtom == atom.Span &&
@@ -62,10 +65,11 @@ func getRecipe(url string) error {
 				case html.TextToken:
 					token = z.Token()
 					fmt.Println("ingredient>", token.Data)
+					ret.Ingredients = append(ret.Ingredients, token.Data)
 				case html.ErrorToken:
-					return z.Err()
+					return ret, z.Err()
 				default:
-					return errors.New("allrecipes parser: ingredient text was expected here")
+					return ret, errors.New("allrecipes parser: ingredient text was expected here")
 				}
 			} else if token.DataAtom == atom.Span &&
 				checkAttr(token.Attr, "class", "recipe-directions__list--item") &&
@@ -78,26 +82,29 @@ func getRecipe(url string) error {
 				case html.TextToken:
 					token = z.Token()
 					fmt.Println("instruction>", token.Data)
+					ret.Instructions = append(ret.Instructions,
+						InstructionType{Instruction: token.Data})
 				case html.ErrorToken:
-					return z.Err()
+					return ret, z.Err()
 				default:
-					return errors.New("allrecipes parser: instruction text was expected here")
+					return ret, errors.New("allrecipes parser: instruction text was expected here")
 				}
 			}
 
 		}
 
 	}
-	return nil
+	return ret, nil
 }
 
 func main() {
 	//url := "http://allrecipes.com/recipe/231495/texas-boiled-beer-shrimp/"
 	url := "http://allrecipes.com/recipe/11772/spaghetti-pie-i/?clickId=right%20rail0&internalSource=rr_feed_recipe_sb&referringId=231495%20referringContentType%3Drecipe"
-	err := getRecipe(url)
+	recipe, err := getRecipe(url)
 	if err != nil {
 		fmt.Println(err) // TODO stderr
 		return
 	}
+	fmt.Printf("\nrecipe: %+v\n", recipe)
 
 }
