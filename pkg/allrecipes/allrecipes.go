@@ -18,39 +18,42 @@ func getRecipe() (*html.Node, error) {
 	return html.Parse(resp.Body)
 }
 
-func loopSiblings(n *html.Node, f func(c *html.Node) bool) {
+func loopSiblings(n *html.Node, f func(c *html.Node) bool) bool {
 	for c := n; c != nil; c = c.NextSibling {
 		fmt.Println("ls")
 		if !f(c) {
-			break
+			return false
 		}
 	}
+	return true
 }
 
-func loopChildren(n *html.Node, f func(c *html.Node) bool) {
+func loopChildren(n *html.Node, f func(*html.Node) bool) bool {
 	for c := n.FirstChild; c != nil; c = c.FirstChild {
 		fmt.Println("lc")
 		if !f(c) {
-			break
+			return false
 		}
 	}
+	return true
 }
 
-func crawlNodes(n *html.Node, f func(c *html.Node) bool) {
-	cont := true
-	fmt.Println(0)
-	loopSiblings(n, func(ns *html.Node) bool {
-		fmt.Println(1)
-		loopChildren(ns, func(cn *html.Node) bool {
-			fmt.Println(2)
-			cont = f(cn)
-			if cont {
-				crawlNodes(cn, f)
-			}
-			return cont
+func crawlNodes(nIn *html.Node, f func(*html.Node) bool) {
+	var crawlNodesHelper func(cont bool, n *html.Node) bool
+
+	crawlNodesHelper = func(cont bool, n *html.Node) bool {
+		fmt.Println(0)
+		loopSiblings(n, func(ns *html.Node) bool {
+			fmt.Println(1)
+			return loopChildren(ns, func(cn *html.Node) bool {
+				fmt.Println(2)
+				return crawlNodesHelper(f(cn), cn)
+			})
 		})
-		return cont
-	})
+		return true
+	}
+
+	crawlNodesHelper(true, nIn)
 }
 
 func main() {
