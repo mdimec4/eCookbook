@@ -20,7 +20,6 @@ func getRecipe() (*html.Node, error) {
 
 func loopSiblings(n *html.Node, f func(c *html.Node) bool) bool {
 	for c := n; c != nil; c = c.NextSibling {
-		fmt.Println("ls")
 		if !f(c) {
 			return false
 		}
@@ -30,7 +29,6 @@ func loopSiblings(n *html.Node, f func(c *html.Node) bool) bool {
 
 func loopChildren(n *html.Node, f func(*html.Node) bool) bool {
 	for c := n.FirstChild; c != nil; c = c.FirstChild {
-		fmt.Println("lc")
 		if !f(c) {
 			return false
 		}
@@ -42,11 +40,8 @@ func crawlNodes(nIn *html.Node, f func(*html.Node) bool) {
 	var crawlNodesHelper func(cont bool, n *html.Node) bool
 
 	crawlNodesHelper = func(cont bool, n *html.Node) bool {
-		fmt.Println(0)
 		loopSiblings(n, func(ns *html.Node) bool {
-			fmt.Println(1)
 			return loopChildren(ns, func(cn *html.Node) bool {
-				fmt.Println(2)
 				return crawlNodesHelper(f(cn), cn)
 			})
 		})
