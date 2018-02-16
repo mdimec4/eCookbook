@@ -19,8 +19,29 @@ func checkAttr(attr []html.Attribute, key, val string) bool {
 	return false
 }
 
-func getRecipe() error {
-	resp, err := http.Get("http://allrecipes.com/recipe/231495/texas-boiled-beer-shrimp/")
+func findTokenText(z *html.Tokenizer, dataAtom atom.Atom, key, value string) (string, error) {
+	token := z.Token()
+	if token.DataAtom == dataAtom &&
+		checkAttr(token.Attr, key, value) {
+		// next token should be text of the ingredient span
+		tt := z.Next()
+		switch tt {
+		case html.TextToken:
+			token = z.Token()
+			return token.Data, nil
+		case html.ErrorToken:
+			return "", z.Err()
+		default:
+			return "", errors.New("allrecipe html parser: " +
+				key + " : " + value + "text was expected")
+
+		}
+	}
+	return "", nil
+}
+
+func getRecipe(url string) error {
+	resp, err := http.Get(url)
 	if err != nil {
 		return err
 	}
@@ -36,25 +57,15 @@ func getRecipe() error {
 			}
 			return z.Err()
 		case html.StartTagToken:
-			token := z.Token()
 			// did we hit one of ingredients
 			// <span class="recipe-ingred_txt added" ... itemprop="ingredients">
-			if token.DataAtom == atom.Span &&
-				checkAttr(token.Attr, "itemprop", "ingredients") {
-				fmt.Println("-->>", token.DataAtom)
-				// next token should be text of the ingredient span
-				tt = z.Next()
-				switch tt {
-				case html.TextToken:
-					token = z.Token()
-					fmt.Println("next>>", string(z.Raw()))
-					fmt.Println("data>>", token.Data)
-					fmt.Println("atom>>", token.DataAtom)
-				default:
-					errors.New("allrecipe html parser: ingredient text was expected")
-
-				}
+			if ingredient, err := findTokenText(z,
+				atom.Span, "itemprop", "ingredients"); err != nil {
+				return err
+			} else if ingredient != "" {
+				fmt.Println("ingredient>>", ingredient)
 			}
+
 		}
 
 	}
@@ -62,8 +73,9 @@ func getRecipe() error {
 }
 
 func main() {
-	// var ingredients []string
-	err := getRecipe()
+	//url := "http://allrecipes.com/recipe/231495/texas-boiled-beer-shrimp/"
+	url := "http://allrecipes.com/recipe/11772/spaghetti-pie-i/?clickId=right%20rail0&internalSource=rr_feed_recipe_sb&referringId=231495%20referringContentType%3Drecipe"
+	err := getRecipe(url)
 	if err != nil {
 		fmt.Println(err) // TODO stderr
 		return
