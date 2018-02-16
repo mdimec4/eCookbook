@@ -20,22 +20,6 @@ func checkAttr(attr []html.Attribute, key, val string) bool {
 }
 
 func findTokenText(z *html.Tokenizer, dataAtom atom.Atom, key, value string) (string, error) {
-	token := z.Token()
-	if token.DataAtom == dataAtom &&
-		checkAttr(token.Attr, key, value) {
-		// next token should be text of the ingredient span
-		tt := z.Next()
-		switch tt {
-		case html.TextToken:
-			token = z.Token()
-			return token.Data, nil
-		case html.ErrorToken:
-			return "", z.Err()
-		default:
-			return "", errors.New("text was expected")
-
-		}
-	}
 	return "", nil
 }
 
@@ -56,22 +40,37 @@ func getRecipe(url string) error {
 			}
 			return z.Err()
 		case html.StartTagToken:
-			// did we hit one of the ingredients
-			// <span class="recipe-ingred_txt added" ... itemprop="ingredients">
-			if ingredient, err := findTokenText(z,
-				atom.Span, "itemprop", "ingredients"); err != nil {
-				return fmt.Errorf("allrecipes ingredients parser:")
-			} else if ingredient != "" {
-				fmt.Println("ingredient>>", ingredient)
-			}
-
-			// did we hit one of the instructions
-			// <span class="recipe-ingred_txt added" ... itemprop="ingredients">
-			if instruction, err := findTokenText(z,
-				atom.Span, "class", "recipe-directions__list--item"); err != nil {
-				return fmt.Errorf("allrecipes instructions parser:")
-			} else if instruction != "" {
-				fmt.Println("instruction>>", instruction)
+			token := z.Token()
+			if token.DataAtom == atom.Span &&
+				checkAttr(token.Attr, "itemprop", "ingredients") {
+				// did we hit one of the ingredients
+				// <span class="recipe-ingred_txt added" ... itemprop="ingredients">
+				tt := z.Next()
+				// next token should be text of the ingredient span
+				switch tt {
+				case html.TextToken:
+					token = z.Token()
+					fmt.Println("ingredient>", token.Data)
+				case html.ErrorToken:
+					return z.Err()
+				default:
+					return errors.New("allrecipes parser: ingredient text was expected here")
+				}
+			} else if token.DataAtom == atom.Span &&
+				checkAttr(token.Attr, "class", "recipe-directions__list--item") {
+				// did we hit one of the instructions
+				// <span class="recipe-directions__list--item" ...>
+				tt := z.Next()
+				// next token should be text of the instruction span
+				switch tt {
+				case html.TextToken:
+					token = z.Token()
+					fmt.Println("instruction>", token.Data)
+				case html.ErrorToken:
+					return z.Err()
+				default:
+					return errors.New("allrecipes parser: instruction text was expected here")
+				}
 			}
 
 		}
