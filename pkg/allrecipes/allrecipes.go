@@ -72,6 +72,20 @@ endloop:
 		case html.StartTagToken:
 			token := z.Token()
 			if token.DataAtom == atom.Span &&
+				checkAttr(token.Attr, "itemprop", "author") {
+                fmt.Println("AUTHOR")
+				tt := z.Next()
+				switch tt {
+				case html.TextToken:
+					token = z.Token()
+					fmt.Println("author>", token.Data)
+					ret.Publisher = token.Data
+				case html.ErrorToken:
+					return Recipe{}, z.Err()
+				default:
+					return Recipe{}, errors.New("allrecipes parser: author name was expected here")
+				}
+			} else	if token.DataAtom == atom.Span &&
 				checkAttr(token.Attr, "itemprop", "ingredients") {
 				// did we hit one of the ingredients
 				// <span class="recipe-ingred_txt added" ... itemprop="ingredients">
