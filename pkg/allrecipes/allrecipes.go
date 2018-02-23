@@ -7,7 +7,7 @@ import (
 	"io"
 	"net/http"
     "net/url"
-    //"strings"
+    "strings"
 
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
@@ -24,10 +24,16 @@ type Recipe struct {
 	SourceURL    string            `json:"source_url"`
 	Title        string            `json:"title"`
 	ImageURL     string            `json:"image_url"`
-	Tags         []string          `json:"tags"`
+	Description  string            `json:"description"`
 	Ingredients  []string          `json:"ingredients"`
 	Instructions []InstructionType `json:"instructions"`
 	Tips         []string          `json:"tips"`
+}
+
+func delNewLine(s string) string {
+    return strings.Replace(
+        strings.Replace(s, "\n", "", -1),
+        "\r", "", -1)
 }
 
 func checkAttr(attr []html.Attribute, key, val string) bool {
@@ -88,7 +94,7 @@ endloop:
 				case html.TextToken:
 					token = z.Token()
 					fmt.Println("title>", token.Data)
-					ret.Title = token.Data
+					ret.Title = delNewLine(html.UnescapeString(token.Data))
 				case html.ErrorToken:
 					return Recipe{}, z.Err()
 				default:
@@ -102,7 +108,22 @@ endloop:
 				case html.TextToken:
 					token = z.Token()
 					fmt.Println("author>", token.Data)
-					ret.Publisher = token.Data
+					ret.Publisher = delNewLine(html.UnescapeString(token.Data))
+				case html.ErrorToken:
+					return Recipe{}, z.Err()
+				default:
+					return Recipe{}, errors.New("allrecipes parser: author name was expected here")
+				}
+			} else if token.DataAtom == atom.Div &&
+				checkAttr(token.Attr, "itemprop", "description") {
+                // <div class="submitter__description" itemprop="description"> "Family favorite. Serve with lemon wedges."</div>
+				tt := z.Next()
+				switch tt {
+				case html.TextToken:
+					token = z.Token()
+                    fmt.Println(token)
+					fmt.Println("description>", token.Data)
+					ret.Description = delNewLine(html.UnescapeString(token.Data))
 				case html.ErrorToken:
 					return Recipe{}, z.Err()
 				default:
@@ -118,7 +139,8 @@ endloop:
 				case html.TextToken:
 					token = z.Token()
 					fmt.Println("ingredient>", token.Data)
-					ret.Ingredients = append(ret.Ingredients, token.Data)
+					ret.Ingredients = append(ret.Ingredients, 
+                        delNewLine(html.UnescapeString(token.Data)))
 				case html.ErrorToken:
 					return Recipe{}, z.Err()
 				default:
@@ -136,7 +158,8 @@ endloop:
 					token = z.Token()
 					fmt.Println("instruction>", token.Data)
 					ret.Instructions = append(ret.Instructions,
-						InstructionType{Instruction: token.Data})
+						InstructionType{
+                            Instruction: delNewLine(html.UnescapeString(token.Data))})
 				case html.ErrorToken:
 					return Recipe{}, z.Err()
 				default:
@@ -160,8 +183,8 @@ endloop:
 }
 
 func main() {
-	//url := "http://allrecipes.com/recipe/231495/texas-boiled-beer-shrimp/"
-	url := "http://allrecipes.com/recipe/11772/spaghetti-pie-i/?clickId=right%20rail0&internalSource=rr_feed_recipe_sb&referringId=231495%20referringContentType%3Drecipe"
+    url := "http://allrecipes.com/recipe/231495/texas-boiled-beer-shrimp/"
+	//url := "http://allrecipes.com/recipe/11772/spaghetti-pie-i/?clickId=right%20rail0&internalSource=rr_feed_recipe_sb&referringId=231495%20referringContentType%3Drecipe"
 	recipe, err := getRecipe(url)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err) // TODO stderr
