@@ -83,7 +83,6 @@ endloop:
 					fmt.Println("ingredient>", token.Data)
 					ret.Ingredients = append(ret.Ingredients, token.Data)
 				case html.ErrorToken:
-                   fmt.Println("2 xxxx", ret)
 					return Recipe{}, z.Err()
 				default:
 					return Recipe{}, errors.New("allrecipes parser: ingredient text was expected here")
@@ -102,7 +101,6 @@ endloop:
 					ret.Instructions = append(ret.Instructions,
 						InstructionType{Instruction: token.Data})
 				case html.ErrorToken:
-                   fmt.Println("1 xxxx", ret)
 					return Recipe{}, z.Err()
 				default:
 					return Recipe{}, errors.New("allrecipes parser: instruction text was expected here")
@@ -112,7 +110,6 @@ endloop:
 		}
 
 	}
-    fmt.Println("xxxx", ret)
 	return ret, nil
 }
 
