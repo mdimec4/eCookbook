@@ -39,6 +39,15 @@ func checkAttr(attr []html.Attribute, key, val string) bool {
 	return false
 }
 
+func getAttrVal(attr []html.Attribute, key string) string {
+	for _, a := range attr {
+		if a.Key == key {
+			return a.Val
+		}
+	}
+	return ""
+}
+
 func getRecipe(recipeUrl string) (Recipe, error) {
     // get recipe id from url
     u, err := url.Parse(recipeUrl)
@@ -73,7 +82,7 @@ endloop:
 			token := z.Token()
 			if token.DataAtom == atom.H1 &&
 				checkAttr(token.Attr, "itemprop", "name") {
-                // <span class="submitter__name" itemprop="author">Kimberley</span>
+                // <h1 class="recipe-summary__h1" itemprop="name">Spaghetti Pie I</h1>
 				tt := z.Next()
 				switch tt {
 				case html.TextToken:
@@ -134,6 +143,15 @@ endloop:
 					return Recipe{}, errors.New("allrecipes parser: instruction text was expected here")
 				}
 			}
+        case html.SelfClosingTagToken:
+			token := z.Token()
+			if token.DataAtom == atom.Meta &&
+                checkAttr(token.Attr, "property", "og:image") {
+                // <meta property="og:image" content="https://images.media-allrecipes.com/userphotos/560x315/726090.jpg" />
+                imgURL := getAttrVal(token.Attr, "content")
+				fmt.Println("image>", imgURL)
+                ret.ImageURL = imgURL
+            }
 
 		}
 
