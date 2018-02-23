@@ -1,10 +1,13 @@
 package main
 
 import (
+    "os"
 	"errors"
 	"fmt"
 	"io"
 	"net/http"
+    "net/url"
+    //"strings"
 
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
@@ -36,23 +39,36 @@ func checkAttr(attr []html.Attribute, key, val string) bool {
 	return false
 }
 
-func getRecipe(url string) (Recipe, error) {
-	ret := Recipe{}
-	resp, err := http.Get(url)
+func getRecipe(recipeUrl string) (Recipe, error) {
+    // get recipe id from url
+    u, err := url.Parse(recipeUrl)
 	if err != nil {
-		return ret, err
+		return Recipe{}, err
+	}
+    if u.Host != "allrecipes.com" {
+        return Recipe{}, errors.New("expected allrecipes.com host name")
+    }
+    //remove Qury part from URL
+    u.RawQuery = ""
+
+    // parse html
+    resp, err := http.Get(u.String())
+	if err != nil {
+		return Recipe{}, err
 	}
 	defer resp.Body.Close()
-	//body, err := ioutil.ReadAll(resp.Body)
+    ret := Recipe{RecipeID: u.String(), SourceURL: u.String()}
+
 	z := html.NewTokenizer(resp.Body)
+endloop:
 	for {
 		tt := z.Next()
 		switch tt {
 		case html.ErrorToken:
 			if z.Err() == io.EOF {
-				return ret, nil
+				break endloop
 			}
-			return ret, z.Err()
+			return Recipe{}, z.Err()
 		case html.StartTagToken:
 			token := z.Token()
 			if token.DataAtom == atom.Span &&
@@ -67,9 +83,10 @@ func getRecipe(url string) (Recipe, error) {
 					fmt.Println("ingredient>", token.Data)
 					ret.Ingredients = append(ret.Ingredients, token.Data)
 				case html.ErrorToken:
-					return ret, z.Err()
+                   fmt.Println("2 xxxx", ret)
+					return Recipe{}, z.Err()
 				default:
-					return ret, errors.New("allrecipes parser: ingredient text was expected here")
+					return Recipe{}, errors.New("allrecipes parser: ingredient text was expected here")
 				}
 			} else if token.DataAtom == atom.Span &&
 				checkAttr(token.Attr, "class", "recipe-directions__list--item") &&
@@ -85,15 +102,17 @@ func getRecipe(url string) (Recipe, error) {
 					ret.Instructions = append(ret.Instructions,
 						InstructionType{Instruction: token.Data})
 				case html.ErrorToken:
-					return ret, z.Err()
+                   fmt.Println("1 xxxx", ret)
+					return Recipe{}, z.Err()
 				default:
-					return ret, errors.New("allrecipes parser: instruction text was expected here")
+					return Recipe{}, errors.New("allrecipes parser: instruction text was expected here")
 				}
 			}
 
 		}
 
 	}
+    fmt.Println("xxxx", ret)
 	return ret, nil
 }
 
@@ -102,7 +121,7 @@ func main() {
 	url := "http://allrecipes.com/recipe/11772/spaghetti-pie-i/?clickId=right%20rail0&internalSource=rr_feed_recipe_sb&referringId=231495%20referringContentType%3Drecipe"
 	recipe, err := getRecipe(url)
 	if err != nil {
-		fmt.Println(err) // TODO stderr
+		fmt.Fprintf(os.Stderr, "%s\n", err) // TODO stderr
 		return
 	}
 	fmt.Printf("\nrecipe: %+v\n", recipe)
