@@ -73,7 +73,7 @@ endloop:
 			token := z.Token()
 			if token.DataAtom == atom.Span &&
 				checkAttr(token.Attr, "itemprop", "author") {
-                fmt.Println("AUTHOR")
+                // <span class="submitter__name" itemprop="author">Kimberley</span>
 				tt := z.Next()
 				switch tt {
 				case html.TextToken:
