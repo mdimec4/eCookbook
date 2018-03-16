@@ -1,4 +1,4 @@
-FROM ubuntu:17.10 
+FROM ubuntu:17.10
 #FROM armv7/armhf-ubuntu:16.10
 
 ADD . /tmp/repo/src/eCookbook
@@ -14,7 +14,7 @@ RUN apt-get update && \
     nodejs \
     npm \
     golang \
-    wget \ 
+    wget \
     git && \
     # install dumb init
     cd /tmp && \
