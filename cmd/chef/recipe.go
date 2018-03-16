@@ -269,10 +269,3 @@ func main() {
 	m.Handle("/api/", router)
 	fmt.Fprintf(os.Stderr, "%v\n", http.ListenAndServe(getEnvConf("CHEF_LISTEN_ADDR", ":4006"), m))
 }
-
-func getFoodToFork(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-
-	id := params["rId"]
-}
