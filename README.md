@@ -13,3 +13,14 @@ Cookbook on Visionect e-ink device.
  | CHEF_DB_HOST     | localhost     |
  | CHEF_DB_PORT     | 5432          |
  | CHEF_LISTEN_ADDR | :4006         |
+
+## Docker
+ Use provided ```Dockerfile``` to buld docker image.
+ To build for ARM, you need to first generate ```Dockerfile_arm``` with ```generate_Dockerfile_arm.sh```.
+
+
+```sh
+docker run -d --restart=always -e POSTGRES_PASSWORD=chef -e POSTGRES_USER=chef -e POSTGRES_DB=cookbook --name chef_postgres postgres
+docker run -d --restart=always -e CHEF_DB_HOST=db2_1 -p 4006:4006 --link chef_postgres:db2_1 --name chef chef
+```
+

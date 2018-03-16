@@ -1,4 +1,4 @@
-FROM ubuntu:16.04 
+FROM ubuntu:17.10 
 #FROM armv7/armhf-ubuntu:16.10
 
 ADD . /tmp/repo/src/eCookbook
@@ -9,16 +9,13 @@ ENV PATH="/tmp/repo/bin:${PATH}"
 
 # golang node.js npm
 RUN apt-get update && \
+    apt-get install -y --no-install-recommends --reinstall ca-certificates && \
     apt-get install -y --no-install-recommends build-essential \
     nodejs \
     npm \
     golang \
     wget \ 
     git && \
-    #DEBUG
-    ls -lh /usr/bin/node* && \
-    # fix node vs. nodejs
-    ln -s /usr/bin/nodejs /usr/bin/node && \
     # install dumb init
     cd /tmp && \
     wget -P /tmp https://github.com/Yelp/dumb-init/archive/v1.2.0.tar.gz && \
@@ -44,7 +41,6 @@ RUN apt-get update && \
     golang \
     wget \
     git && \
-    rm /usr/bin/node && \
     apt-get autoremove -y && \
     apt-get clean
 

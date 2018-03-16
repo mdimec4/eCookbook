@@ -1,6 +1,6 @@
 #!/bin/bash
 
-go get -u github.com/golang/dep/cmd/dep
+go get github.com/golang/dep/cmd/dep
 dep ensure -v
 mkdir -p ./build
 if ! go build -o build/chef eCookbook/cmd/chef

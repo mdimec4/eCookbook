@@ -26,7 +26,3 @@
 [[constraint]]
   branch = "master"
   name = "github.com/lib/pq"
-
-[[constraint]]
-  branch = "master"
-  name = "golang.org/x/net"
