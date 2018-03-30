@@ -49,10 +49,12 @@ var (
 )
 
 var (
-	errRecipeExist       = errors.New("recipe already exists")
-	errRecipeExistNot    = errors.New("recipe doesn't exist")
-	errRecipeTitleNotSet = errors.New("recipe title is not set")
-	errRecipeIDNotSet    = errors.New("recipe ID is not set")
+	errRecipeExist              = errors.New("recipe already exists")
+	errRecipeExistNot           = errors.New("recipe doesn't exist")
+	errRecipeTitleNotSet        = errors.New("recipe title is not set")
+	errRecipeIDNotSet           = errors.New("recipe ID is not set")
+	errRecipeIngredientsNotSet  = errors.New("recipe ingredients are not set")
+	errRecipeInstructionsNotSet = errors.New("recipe instructions are not set")
 )
 
 // generate random number
@@ -180,10 +182,20 @@ func postNewRecipe(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	if recipe.RecipeID == "" {
 		http.Error(w, errRecipeIDNotSet.Error(), http.StatusInternalServerError)
 		return
 	}
+	if len(recipe.Ingredients) == 0 || recipe.Ingredients[0] == "" {
+		http.Error(w, errRecipeIngredientsNotSet.Error(), http.StatusInternalServerError)
+		return
+	}
+	if len(recipe.Instructions) == 0 && recipe.Instructions[0].Instruction == "" {
+		http.Error(w, errRecipeInstructionsNotSet.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	// prepped back-end name to ID. We might need to be able
 	// in the future to be able to figure out back-end from ID only.
 	if recipe.Backend != "" {
@@ -214,6 +226,19 @@ func putUpdateRecipe(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	if params["id"] != recipe.RecipeID {
 		http.Error(w, "URL vs. JSON body 'RecipeID' mismatch", http.StatusConflict)
+		return
+	}
+
+	if recipe.RecipeID == "" {
+		http.Error(w, errRecipeIDNotSet.Error(), http.StatusInternalServerError)
+		return
+	}
+	if len(recipe.Ingredients) == 0 || recipe.Ingredients[0] == "" {
+		http.Error(w, errRecipeIngredientsNotSet.Error(), http.StatusInternalServerError)
+		return
+	}
+	if len(recipe.Instructions) == 0 && recipe.Instructions[0].Instruction == "" {
+		http.Error(w, errRecipeInstructionsNotSet.Error(), http.StatusInternalServerError)
 		return
 	}
 
