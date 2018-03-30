@@ -28,7 +28,8 @@ REST API guides
 
 // Recipe represents the recipe in database.
 type Recipe struct {
-	RecipeID     string   `json:"recipe_id"`
+	RecipeID     string   `json:"recipe_id"` // in format "backend:id"
+	Backend      string   `json:"backend"`
 	Publisher    string   `json:"publisher"`
 	SourceURL    string   `json:"source_url"`
 	Title        string   `json:"title"`
@@ -43,13 +44,15 @@ type Recipe struct {
 }
 
 var (
-	db Database
+	db       Database
+	backends map[string]backend
 )
 
 var (
 	errRecipeExist       = errors.New("recipe already exists")
 	errRecipeExistNot    = errors.New("recipe doesn't exist")
 	errRecipeTitleNotSet = errors.New("recipe title is not set")
+	errRecipeIDNotSet    = errors.New("recipe ID is not set")
 )
 
 // generate random number
@@ -78,18 +81,39 @@ func uniqueRecipeID(title string) (string, error) {
 	return fmt.Sprintf("%x-%x-%x", crc, rand, timestamp), nil
 }
 
-// newRecepy will create unique ID for recipe,
-// and insert the recipe into the database.
-func newRecipe(recipe Recipe) (string, error) {
-	if recipe.RecipeID == "" {
-		id, err := uniqueRecipeID(recipe.Title)
-		if err != nil {
-			return "", err
-		}
-		recipe.RecipeID = id
+type backend interface {
+	handleNewRecipe(recipe Recipe) (Recipe, error)
+}
+
+// findBackendFromRecipeID will parse recipeID to find the correct back-end
+func findBackend(recipe Recipe) backend {
+	// default to manualEntryBackendName for compatibility
+	// reasons, since old manual ID's didn't have "backend" entry
+	name := manualEntryBackendName
+	if recipe.Backend != "" {
+		name = recipe.Backend
 	}
-	err := db.CreateRecipe(recipe)
-	return recipe.RecipeID, err
+
+	if b, ok := backends[name]; ok {
+		return b
+	}
+	return nil
+}
+
+// findBackendFromRecipeID will parse recipeID to find the correct back-end
+func findBackendFromRecipeID(recipeID string) backend {
+	// default to manualEntryBackendName for compatibility
+	// reasons, since old manual ID's don't include
+	// back-end name with ':' as delimiter
+	name := manualEntryBackendName
+	if parts := strings.Split(recipeID, ":"); len(parts) > 1 {
+		name = parts[0]
+	}
+
+	if b, ok := backends[name]; ok {
+		return b
+	}
+	return nil
 }
 
 func getRecipesList(w http.ResponseWriter, r *http.Request) {
@@ -128,7 +152,6 @@ func getRecipe(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// fmt.Println("str ", string(b))
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(b)
 }
@@ -142,7 +165,31 @@ func postNewRecipe(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	id, err := newRecipe(recipe)
+
+	if recipe.Backend == "" {
+		recipe.Backend = manualEntryBackendName
+	}
+
+	b := findBackend(recipe)
+	if b == nil {
+		http.Error(w, fmt.Sprintf("problem finding back-end named '%s'", recipe.Backend, err), http.StatusInternalServerError)
+		return
+	}
+	recipe, err = b.handleNewRecipe(recipe)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if recipe.RecipeID == "" {
+		http.Error(w, errRecipeIDNotSet.Error(), http.StatusInternalServerError)
+		return
+	}
+	// prepped back-end name to ID. We might need to be able
+	// in the future to be able to figure out back-end from ID only.
+	if recipe.Backend != "" {
+		recipe.RecipeID = recipe.Backend + ":" + recipe.RecipeID
+	}
+	err = db.CreateRecipe(recipe)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -151,7 +198,7 @@ func postNewRecipe(w http.ResponseWriter, r *http.Request) {
 	// 201 Created
 	// Location
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Location", r.URL.Path+"/"+id)
+	w.Header().Set("Location", r.URL.Path+"/"+recipe.RecipeID)
 	w.WriteHeader(http.StatusCreated)
 }
 
@@ -254,6 +301,11 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Setting database connection: %s\n", err)
 		os.Exit(1)
 	}
+
+	// init backends
+	backends = map[string]backend{
+		manualEntryBackendName: &manualEntryBackend{}}
+
 	m := http.NewServeMux()
 	m.HandleFunc("/", staticHandleFunc)
 	// TODO implement authentication

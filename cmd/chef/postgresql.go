@@ -142,6 +142,7 @@ func (postgres *PostgresBackend) ListRecipes() ([]Recipe, error) {
 			}
 			return nil, err
 		}
+		recipe = Recipe{}
 		err = json.Unmarshal([]byte(data), &recipe)
 		if err != nil {
 			return nil, err
