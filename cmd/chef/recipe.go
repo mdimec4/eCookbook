@@ -53,6 +53,7 @@ var (
 	errRecipeExistNot           = errors.New("recipe doesn't exist")
 	errRecipeTitleNotSet        = errors.New("recipe title is not set")
 	errRecipeIDNotSet           = errors.New("recipe ID is not set")
+	errRecipeSourceURLNotSet    = errors.New("recipe source URL is not set")
 	errRecipeIngredientsNotSet  = errors.New("recipe ingredients are not set")
 	errRecipeInstructionsNotSet = errors.New("recipe instructions are not set")
 )
@@ -187,6 +188,10 @@ func postNewRecipe(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, errRecipeIDNotSet.Error(), http.StatusInternalServerError)
 		return
 	}
+	if recipe.Title == "" {
+		http.Error(w, errRecipeTitleNotSet.Error(), http.StatusInternalServerError)
+		return
+	}
 	if len(recipe.Ingredients) == 0 || recipe.Ingredients[0] == "" {
 		http.Error(w, errRecipeIngredientsNotSet.Error(), http.StatusInternalServerError)
 		return
@@ -231,6 +236,10 @@ func putUpdateRecipe(w http.ResponseWriter, r *http.Request) {
 
 	if recipe.RecipeID == "" {
 		http.Error(w, errRecipeIDNotSet.Error(), http.StatusInternalServerError)
+		return
+	}
+	if recipe.Title == "" {
+		http.Error(w, errRecipeTitleNotSet.Error(), http.StatusInternalServerError)
 		return
 	}
 	if len(recipe.Ingredients) == 0 || recipe.Ingredients[0] == "" {
@@ -329,7 +338,8 @@ func main() {
 
 	// init backends
 	backends = map[string]backend{
-		manualEntryBackendName: &manualEntryBackend{}}
+		manualEntryBackendName: &manualEntryBackend{},
+		allRecipesBackendName:  &allRecipesBackend{getEnvConf("ALLRECIPES_MIDDLEWARE_HOST_PORT", "localhost:4007")}}
 
 	m := http.NewServeMux()
 	m.HandleFunc("/", staticHandleFunc)
