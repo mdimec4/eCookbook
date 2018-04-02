@@ -3,12 +3,18 @@ package main
 import (
 	"fmt"
 	"net/url"
+    "net/http"
 	"strings"
+    "encoding/json"
+    "errors"
+    "path"
 )
 
 const allRecipesBackendName string = "allrecipes.com"
 
-const errMiddlewareHostPortNotSet error = errors.New("allrecipes.com middle-ware host is not set")
+var (
+    errMiddlewareHostPortNotSet error = errors.New("allrecipes.com middle-ware host is not set")
+)
 
 type allRecipesRecipe struct {
 	RecipeID    string   `json:"recipe_id"`
@@ -62,10 +68,10 @@ func (arb allRecipesBackend) handleNewRecipe(recipe Recipe) (Recipe, error) {
 	if arPath[0] == '/' {
 		arPath = arPath[1:]
 	}
-	if arParh[len(arPath)-1] == '/' {
+	if arPath[len(arPath)-1] == '/' {
 		arPath = arPath[:len(arPath)-1]
 	}
-	parts := strings.Split(p, "/")
+	parts := strings.Split(arPath, "/")
 	// url path scheme is /recipe/{ID}/some name
 	if len(parts) < 2 {
 		return Recipe{}, fmt.Errorf("failed to get ID from allrecipes.com URL: %s", recipe.SourceURL)
@@ -88,28 +94,32 @@ func (arb allRecipesBackend) handleNewRecipe(recipe Recipe) (Recipe, error) {
 	if resp.StatusCode != http.StatusOK /*200*/ {
 		return Recipe{}, fmt.Errorf("allrecipes.com middle-ware responded with: %s", resp.Status)
 	}
-	err := json.NewDecoder(resp.Body).Decode(&arRecipe)
+	err = json.NewDecoder(resp.Body).Decode(&arRecipe)
 	if err != nil {
 		return Recipe{}, err
 	}
 
 	// translate to our recipe format
+    if recipe.RecipeID == "" {
+        recipe.RecipeID = arRecipe.RecipeID
+    }
 	recipe.Publisher = arRecipe.Author
+    if recipe.SourceURL == "" {
+        recipe.SourceURL = arRecipe.SourceURL
+    }
 	recipe.Title = arRecipe.Name
 	recipe.ImageURL = arRecipe.ImageURL
 	for _, i := range arRecipe.Ingredients {
 		recipe.Ingredients = append(recipe.Ingredients, i)
 	}
-	for _, i := range arRecipe.Instructions {
-		recipe.Instructions = append(recipe.Instructions, struct {
-			ImageURL    string
-			Instruction string
-		}{"", i})
+	for _, i := range arRecipe.Directions {
+		recipe.Instructions = append(recipe.Instructions,
+                                        Instruction{"", i})
 	}
 	if arRecipe.Description != "" {
 		recipe.Tips = append(recipe.Tips, arRecipe.Description)
 	}
-	for _, f := range arRecipe.Footnots {
+	for _, f := range arRecipe.Footnotes {
 		recipe.Tips = append(recipe.Tips, f)
 	}
 
