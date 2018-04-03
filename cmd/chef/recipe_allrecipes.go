@@ -60,8 +60,8 @@ func (arb allRecipesBackend) handleNewRecipe(recipe Recipe) (Recipe, error) {
 		if err != nil {
 			return Recipe{}, fmt.Errorf("allrecipes.com URL parsing problem: %s", err)
 		}
-		if allRecipesURL.Host != "allrecipes.com" {
-			return Recipe{}, fmt.Errorf("'allrecipes.com' host was expected, we have '%s': %s", allRecipesURL.Host)
+		if allRecipesURL.Host != "www.allrecipes.com" {
+			return Recipe{}, fmt.Errorf("'www.allrecipes.com' host was expected, we have: '%s'", allRecipesURL.Host)
 		}
 		arPath := allRecipesURL.Path
 		if arPath[0] == '/' {
