@@ -28,20 +28,20 @@ REST API guides
 
 // Recipe represents the recipe in database.
 type Recipe struct {
-	RecipeID     string         `json:"recipe_id"` // in format "backend:id"
-	Backend      string         `json:"backend"`
-	Publisher    string         `json:"publisher"`
-	SourceURL    string         `json:"source_url"`
-	Title        string         `json:"title"`
-	ImageURL     string         `json:"image_url"`
-	Tags         []string       `json:"tags"`
-	Ingredients  []string       `json:"ingredients"`
-	Instructions []Instruction  `json:"instructions"`
-	Tips []string               `json:"tips"`
+	RecipeID     string        `json:"recipe_id"` // in format "backend:id"
+	Backend      string        `json:"backend"`
+	Publisher    string        `json:"publisher"`
+	SourceURL    string        `json:"source_url"`
+	Title        string        `json:"title"`
+	ImageURL     string        `json:"image_url"`
+	Tags         []string      `json:"tags"`
+	Ingredients  []string      `json:"ingredients"`
+	Instructions []Instruction `json:"instructions"`
+	Tips         []string      `json:"tips"`
 }
 
 type Instruction struct {
-    ImageURL    string `json:"image_url"`
+	ImageURL    string `json:"image_url"`
 	Instruction string `json:"instruction"`
 }
 

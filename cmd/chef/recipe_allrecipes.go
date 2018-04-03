@@ -1,19 +1,19 @@
 package main
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
+	"net/http"
 	"net/url"
-    "net/http"
+	"path"
 	"strings"
-    "encoding/json"
-    "errors"
-    "path"
 )
 
 const allRecipesBackendName string = "allrecipes.com"
 
 var (
-    errMiddlewareHostPortNotSet error = errors.New("allrecipes.com middle-ware host is not set")
+	errMiddlewareHostPortNotSet error = errors.New("allrecipes.com middle-ware host is not set")
 )
 
 type allRecipesRecipe struct {
@@ -53,30 +53,34 @@ func (arb allRecipesBackend) handleNewRecipe(recipe Recipe) (Recipe, error) {
 	if recipe.Backend == "" {
 		recipe.Backend = allRecipesBackendName
 	}
-	if recipe.SourceURL == "" {
-		return Recipe{}, errRecipeSourceURLNotSet
+
+	if recipe.RecipeID == "" && recipe.SourceURL != "" {
+		// get recipe ID from allrecipes.com url
+		allRecipesURL, err := url.Parse(recipe.SourceURL)
+		if err != nil {
+			return Recipe{}, fmt.Errorf("allrecipes.com URL parsing problem: %s", err)
+		}
+		if allRecipesURL.Host != "allrecipes.com" {
+			return Recipe{}, fmt.Errorf("'allrecipes.com' host was expected, we have '%s': %s", allRecipesURL.Host)
+		}
+		arPath := allRecipesURL.Path
+		if arPath[0] == '/' {
+			arPath = arPath[1:]
+		}
+		if arPath[len(arPath)-1] == '/' {
+			arPath = arPath[:len(arPath)-1]
+		}
+		parts := strings.Split(arPath, "/")
+		// url path scheme is /recipe/{ID}/some name
+		if len(parts) < 2 {
+			return Recipe{}, fmt.Errorf("failed to get ID from allrecipes.com URL: %s", recipe.SourceURL)
+		}
+		recipe.RecipeID = parts[1]
 	}
-	// get recipe ID from allrecipes.com url
-	allRecipesURL, err := url.Parse(recipe.SourceURL)
-	if err != nil {
-		return Recipe{}, fmt.Errorf("allrecipes.com URL parsing problem: %s", err)
+
+	if recipe.RecipeID == "" {
+		return Recipe{}, errRecipeIDNotSet
 	}
-	if allRecipesURL.Host != "allrecipes.com" {
-		return Recipe{}, fmt.Errorf("'allrecipes.com' host was expected, we have '%s': %s", allRecipesURL.Host)
-	}
-	arPath := allRecipesURL.Path
-	if arPath[0] == '/' {
-		arPath = arPath[1:]
-	}
-	if arPath[len(arPath)-1] == '/' {
-		arPath = arPath[:len(arPath)-1]
-	}
-	parts := strings.Split(arPath, "/")
-	// url path scheme is /recipe/{ID}/some name
-	if len(parts) < 2 {
-		return Recipe{}, fmt.Errorf("failed to get ID from allrecipes.com URL: %s", recipe.SourceURL)
-	}
-	recipe.RecipeID = parts[1]
 
 	// get recipe id from url
 	u, err := url.Parse("http://" + arb.middlewareHostPort)
@@ -100,13 +104,11 @@ func (arb allRecipesBackend) handleNewRecipe(recipe Recipe) (Recipe, error) {
 	}
 
 	// translate to our recipe format
-    if recipe.RecipeID == "" {
-        recipe.RecipeID = arRecipe.RecipeID
-    }
+	if recipe.RecipeID == "" {
+		recipe.RecipeID = arRecipe.RecipeID
+	}
 	recipe.Publisher = arRecipe.Author
-    if recipe.SourceURL == "" {
-        recipe.SourceURL = arRecipe.SourceURL
-    }
+	recipe.SourceURL = arRecipe.SourceURL
 	recipe.Title = arRecipe.Name
 	recipe.ImageURL = arRecipe.ImageURL
 	for _, i := range arRecipe.Ingredients {
@@ -114,7 +116,7 @@ func (arb allRecipesBackend) handleNewRecipe(recipe Recipe) (Recipe, error) {
 	}
 	for _, i := range arRecipe.Directions {
 		recipe.Instructions = append(recipe.Instructions,
-                                        Instruction{"", i})
+			Instruction{"", i})
 	}
 	if arRecipe.Description != "" {
 		recipe.Tips = append(recipe.Tips, arRecipe.Description)
