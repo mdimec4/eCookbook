@@ -2,7 +2,7 @@ FROM ubuntu:17.10
 #FROM armv7/armhf-ubuntu:16.10
 
 ADD . /tmp/repo/src/eCookbook
-WORKDIR /opt/chef
+WORKDIR /opt/eCookbook
 
 ENV GOPATH="/tmp/repo"
 ENV PATH="/tmp/repo/bin:${PATH}"
@@ -30,8 +30,8 @@ RUN apt-get update && \
     cd /tmp/repo/src/eCookbook && \
     make test && \
     make && \
-    mkdir -p /opt/chef && \
-    cp -r ./build/* /opt/chef && \
+    mkdir -p /opt/eCookbook && \
+    cp -r ./build/* /opt/eCookbook && \
     cd / && \
     rm -r /tmp/repo && \
     # cleanup
@@ -50,7 +50,7 @@ ENTRYPOINT ["/sbin/dumb-init", "--"]
 # or if you use --rewrite or other cli flags
 # ENTRYPOINT ["dumb-init", "--rewrite", "2:3", "--"]
 # CMD ["/my/script", "--with", "--args"]
-CMD ["./chef"]
+CMD ["./eCookbook"]
 
 
 

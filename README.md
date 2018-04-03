@@ -1,4 +1,4 @@
-# Chef
+# eCookbook
 
 Cookbook on Visionect e-ink device. 
 
@@ -25,7 +25,7 @@ Cookbook on Visionect e-ink device.
 
 
 ```sh
-docker run -d --restart=always -e POSTGRES_PASSWORD=chef -e POSTGRES_USER=chef -e POSTGRES_DB=cookbook --name chef_postgres postgres
-docker run -d --restart=always -e CHEF_DB_HOST=db2_1 -p 4006:4006 --link chef_postgres:db2_1 --name chef chef
+docker run -d --restart=always -e POSTGRES_PASSWORD=chef -e POSTGRES_USER=chef -e POSTGRES_DB=cookbook --name eCookbook_postgres postgres
+docker run -d --restart=always -e CHEF_DB_HOST=db2_1 -p 4006:4006 --link eCookbook_postgres:db2_1 --name eCookbook mihad/ecookbook
 ```
 

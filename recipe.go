@@ -177,7 +177,7 @@ func postNewRecipe(w http.ResponseWriter, r *http.Request) {
 
 	b := findBackend(recipe)
 	if b == nil {
-		http.Error(w, fmt.Sprintf("problem finding back-end named '%s'", recipe.Backend, err), http.StatusInternalServerError)
+        http.Error(w, fmt.Sprintf("problem finding back-end named '%s': %s", recipe.Backend, err), http.StatusInternalServerError)
 		return
 	}
 	recipe, err = b.handleNewRecipe(recipe)
