@@ -1,4 +1,4 @@
-# Chef
+# eCookbook
 
 Cookbook on Visionect e-ink device. 
 
@@ -14,6 +14,10 @@ Cookbook on Visionect e-ink device.
  | CHEF_DB_PORT                     | 5432           |
  | CHEF_LISTEN_ADDR                 | :4006          |
  | ALLRECIPES_MIDDLEWARE_HOST_PORT  | localhost:4007 |
+ 
+ ## Allrecipes middleware
+ 
+ Cookbook has the ability to process allrecepies.com recipes by simply inserting alrecipes.com URL or decipe ID. For this it relies on external webservice called https://github.com/mdimec4/allrecipes. You need to set ``ALLRECIPES_MIDDLEWARE_HOST_PORT`` accordingly.  
 
 ## Docker
  Use provided ```Dockerfile``` to buld docker image.
@@ -21,7 +25,7 @@ Cookbook on Visionect e-ink device.
 
 
 ```sh
-docker run -d --restart=always -e POSTGRES_PASSWORD=chef -e POSTGRES_USER=chef -e POSTGRES_DB=cookbook --name chef_postgres postgres
-docker run -d --restart=always -e CHEF_DB_HOST=db2_1 -p 4006:4006 --link chef_postgres:db2_1 --name chef chef
+docker run -d --restart=always -e POSTGRES_PASSWORD=chef -e POSTGRES_USER=chef -e POSTGRES_DB=cookbook --name eCookbook_postgres postgres
+docker run -d --restart=always -e CHEF_DB_HOST=db2_1 -p 4006:4006 --link eCookbook_postgres:db2_1 --name eCookbook mihad/ecookbook
 ```
 

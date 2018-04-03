@@ -42,7 +42,7 @@
 
     <!-- TIPS EDITOR-->
     <div>
-        <h2>Tips:</h2>
+        <h2>Tips: (optional)</h2>
         <div v-for="(tip, index) in recipe.tips">
             <input v-model="recipe.tips[index]" type="text" :name="'tip'+index">
             <span v-on:click="removeTip(index)"><icon style="color: red;"scale=1 name="remove"></icon></span>
@@ -64,6 +64,7 @@ export default {
   data () {
     var recipe = {
       recipe_id: '',
+      backend: 'manual-entry',
       title: '',
       source_url: '',
       ingredients: [],

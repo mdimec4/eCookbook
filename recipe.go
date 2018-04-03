@@ -28,28 +28,36 @@ REST API guides
 
 // Recipe represents the recipe in database.
 type Recipe struct {
-	RecipeID     string   `json:"recipe_id"`
-	Publisher    string   `json:"publisher"`
-	SourceURL    string   `json:"source_url"`
-	Title        string   `json:"title"`
-	ImageURL     string   `json:"image_url"`
-	Tags         []string `json:"tags"`
-	Ingredients  []string `json:"ingredients"`
-	Instructions []struct {
-		ImageURL    string `json:"image_url"`
-		Instruction string `json:"instruction"`
-	} `json:"instructions"`
-	Tips []string `json:"tips"`
+	RecipeID     string        `json:"recipe_id"` // in format "backend:id"
+	Backend      string        `json:"backend"`
+	Publisher    string        `json:"publisher"`
+	SourceURL    string        `json:"source_url"`
+	Title        string        `json:"title"`
+	ImageURL     string        `json:"image_url"`
+	Tags         []string      `json:"tags"`
+	Ingredients  []string      `json:"ingredients"`
+	Instructions []Instruction `json:"instructions"`
+	Tips         []string      `json:"tips"`
+}
+
+type Instruction struct {
+	ImageURL    string `json:"image_url"`
+	Instruction string `json:"instruction"`
 }
 
 var (
-	db Database
+	db       Database
+	backends map[string]backend
 )
 
 var (
-	errRecipeExist       = errors.New("recipe already exists")
-	errRecipeExistNot    = errors.New("recipe doesn't exist")
-	errRecipeTitleNotSet = errors.New("recipe title is not set")
+	errRecipeExist              = errors.New("recipe already exists")
+	errRecipeExistNot           = errors.New("recipe doesn't exist")
+	errRecipeTitleNotSet        = errors.New("recipe title is not set")
+	errRecipeIDNotSet           = errors.New("recipe ID is not set")
+	errRecipeSourceURLNotSet    = errors.New("recipe source URL is not set")
+	errRecipeIngredientsNotSet  = errors.New("recipe ingredients are not set")
+	errRecipeInstructionsNotSet = errors.New("recipe instructions are not set")
 )
 
 // generate random number
@@ -78,18 +86,39 @@ func uniqueRecipeID(title string) (string, error) {
 	return fmt.Sprintf("%x-%x-%x", crc, rand, timestamp), nil
 }
 
-// newRecepy will create unique ID for recipe,
-// and insert the recipe into the database.
-func newRecipe(recipe Recipe) (string, error) {
-	if recipe.RecipeID == "" {
-		id, err := uniqueRecipeID(recipe.Title)
-		if err != nil {
-			return "", err
-		}
-		recipe.RecipeID = id
+type backend interface {
+	handleNewRecipe(recipe Recipe) (Recipe, error)
+}
+
+// findBackendFromRecipeID will parse recipeID to find the correct back-end
+func findBackend(recipe Recipe) backend {
+	// default to manualEntryBackendName for compatibility
+	// reasons, since old manual ID's didn't have "backend" entry
+	name := manualEntryBackendName
+	if recipe.Backend != "" {
+		name = recipe.Backend
 	}
-	err := db.CreateRecipe(recipe)
-	return recipe.RecipeID, err
+
+	if b, ok := backends[name]; ok {
+		return b
+	}
+	return nil
+}
+
+// findBackendFromRecipeID will parse recipeID to find the correct back-end
+func findBackendFromRecipeID(recipeID string) backend {
+	// default to manualEntryBackendName for compatibility
+	// reasons, since old manual ID's don't include
+	// back-end name with ':' as delimiter
+	name := manualEntryBackendName
+	if parts := strings.Split(recipeID, ":"); len(parts) > 1 {
+		name = parts[0]
+	}
+
+	if b, ok := backends[name]; ok {
+		return b
+	}
+	return nil
 }
 
 func getRecipesList(w http.ResponseWriter, r *http.Request) {
@@ -128,7 +157,6 @@ func getRecipe(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// fmt.Println("str ", string(b))
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(b)
 }
@@ -142,7 +170,45 @@ func postNewRecipe(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	id, err := newRecipe(recipe)
+
+	if recipe.Backend == "" {
+		recipe.Backend = manualEntryBackendName
+	}
+
+	b := findBackend(recipe)
+	if b == nil {
+        http.Error(w, fmt.Sprintf("problem finding back-end named '%s': %s", recipe.Backend, err), http.StatusInternalServerError)
+		return
+	}
+	recipe, err = b.handleNewRecipe(recipe)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if recipe.RecipeID == "" {
+		http.Error(w, errRecipeIDNotSet.Error(), http.StatusInternalServerError)
+		return
+	}
+	if recipe.Title == "" {
+		http.Error(w, errRecipeTitleNotSet.Error(), http.StatusInternalServerError)
+		return
+	}
+	if len(recipe.Ingredients) == 0 || recipe.Ingredients[0] == "" {
+		http.Error(w, errRecipeIngredientsNotSet.Error(), http.StatusInternalServerError)
+		return
+	}
+	if len(recipe.Instructions) == 0 && recipe.Instructions[0].Instruction == "" {
+		http.Error(w, errRecipeInstructionsNotSet.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// prepped back-end name to ID. We might need to be able
+	// in the future to be able to figure out back-end from ID only.
+	if recipe.Backend != "" {
+		recipe.RecipeID = recipe.Backend + ":" + recipe.RecipeID
+	}
+	err = db.CreateRecipe(recipe)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -151,7 +217,7 @@ func postNewRecipe(w http.ResponseWriter, r *http.Request) {
 	// 201 Created
 	// Location
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Location", r.URL.Path+"/"+id)
+	w.Header().Set("Location", r.URL.Path+"/"+recipe.RecipeID)
 	w.WriteHeader(http.StatusCreated)
 }
 
@@ -167,6 +233,23 @@ func putUpdateRecipe(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	if params["id"] != recipe.RecipeID {
 		http.Error(w, "URL vs. JSON body 'RecipeID' mismatch", http.StatusConflict)
+		return
+	}
+
+	if recipe.RecipeID == "" {
+		http.Error(w, errRecipeIDNotSet.Error(), http.StatusInternalServerError)
+		return
+	}
+	if recipe.Title == "" {
+		http.Error(w, errRecipeTitleNotSet.Error(), http.StatusInternalServerError)
+		return
+	}
+	if len(recipe.Ingredients) == 0 || recipe.Ingredients[0] == "" {
+		http.Error(w, errRecipeIngredientsNotSet.Error(), http.StatusInternalServerError)
+		return
+	}
+	if len(recipe.Instructions) == 0 && recipe.Instructions[0].Instruction == "" {
+		http.Error(w, errRecipeInstructionsNotSet.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -254,6 +337,12 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Setting database connection: %s\n", err)
 		os.Exit(1)
 	}
+
+	// init backends
+	backends = map[string]backend{
+		manualEntryBackendName: &manualEntryBackend{},
+		allRecipesBackendName:  &allRecipesBackend{getEnvConf("ALLRECIPES_MIDDLEWARE_HOST_PORT", "localhost:4007")}}
+
 	m := http.NewServeMux()
 	m.HandleFunc("/", staticHandleFunc)
 	// TODO implement authentication
