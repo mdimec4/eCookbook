@@ -14,6 +14,8 @@ import RecipeViewer from './components/recipe_viewer'
 import RecipeEditorList from './components/recipe_editor_list'
 // import RecipeEditor component
 import RecipeEditor from './components/recipe_editor'
+// import AllRecipes component
+import AllRecipes from './components/allrecipes'
 
 import 'vue-awesome/icons'
 import Icon from 'vue-awesome/components/Icon'
@@ -29,6 +31,8 @@ const routes = [
 {path: '/recipe_editor', component: RecipeEditor, name: 'RecipeEditorNew'},
 // route for the RecipeEditor passing in params
 {path: '/recipe_editor/:id', component: RecipeEditor, name: 'RecipeEditor'},
+// route for the AllRecipes  passing in params
+{path: '/allrecipes', component: AllRecipes, name: 'AllRecipesNew'},
 // route for the RecipeViewBrowser passing in params
 { path: '/device', component: RecipeViewBrowser, name: 'RecipeViewBrowser' },
 // route for the RecipeViewer passing in params

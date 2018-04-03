@@ -194,8 +194,14 @@ export default {
         this.$refs.error_msg.scrollIntoView()
         return
       }
-
-      postOrPutRecipe(this.recipe).then((location) => {
+      var idParam = this.$route.params.id
+      var method = 'POST'
+      // New manual recipes do not have ID set
+      // In oposite case, we are doing recipe update. (HTTP PUT)
+      if (typeof idParam === 'string' && idParam !== '') {
+        method = 'PUT'
+      }
+      postOrPutRecipe(method, this.recipe).then((location) => {
         this.errorMsg = ''
         console.log('recipe url: ', location)
         // redirect back to recipe menu

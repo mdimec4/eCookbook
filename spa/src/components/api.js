@@ -44,7 +44,7 @@ export function deleteRecipe (id) {
   })
 }
 
-export function postOrPutRecipe (recipe) {
+export function postOrPutRecipe (method, recipe) {
   console.log('postOrPutRecipe')
   return new Promise((resolve, reject) => {
     var xhr = new XMLHttpRequest()
@@ -59,12 +59,11 @@ export function postOrPutRecipe (recipe) {
     }
     xhr.onerror = () => reject(new Error('an error occurred during the transaction'))
     xhr.ontimeout = (e) => reject(new Error('timeout'))
-    var method = 'POST'
+    // if this is an update of existing recipe, we need to PUT.
+    // in that case recipe_id is expected to be set and should be included in URL
     var idStr = ''
-    // ID set, then this is not new recipe and we need PUT
-    if (typeof recipe.recipe_id === 'string' && recipe.recipe_id !== '') {
-      method = 'PUT'
-      idStr = '/' + recipe.recipe_id
+    if (typeof recipe.recipe_id === 'string' && recipe.recipe_id !== '' && method === 'PUT') {
+      idStr = '/' + idStr
     }
     xhr.open(method, myRemote + '/api/recipes' + idStr, true)
     xhr.setRequestHeader('Content-Type', 'application/json')
