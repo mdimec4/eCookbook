@@ -68,7 +68,7 @@ export default {
         this.$router.push({name: 'RecipeEditorList'})
       }, (err) => {
         console.error('postOrPutRecipe promise: ', err)
-        this.errorMsg = err
+        this.errorMsg = err.toString()
       })
     }
   }
