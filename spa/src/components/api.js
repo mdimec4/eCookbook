@@ -5,7 +5,7 @@ export function getRecipes (id) {
   return new Promise((resolve, reject) => {
     var xhr = new XMLHttpRequest()
     xhr.onload = () => {
-      console.log('onload', xhr.status, xhr.responseType, xhr.response)
+      // console.log('onload', xhr.status, xhr.responseType, xhr.response)
       if (xhr.status !== 200 /* ok */) {
         reject(new Error(xhr.statusText + ' : ' + xhr.responseText))
       } else {
@@ -29,7 +29,7 @@ export function deleteRecipe (id) {
   return new Promise((resolve, reject) => {
     var xhr = new XMLHttpRequest()
     xhr.onload = () => {
-      console.log('onload', xhr.status, xhr.statusText, xhr.responseType, xhr.response)
+      // console.log('onload', xhr.status, xhr.statusText, xhr.responseType, xhr.response)
       if (xhr.status === 204 /* No Content */) {
         console.log('ok', xhr.response)
         resolve(xhr.statusText)
@@ -49,7 +49,7 @@ export function postOrPutRecipe (method, recipe) {
   return new Promise((resolve, reject) => {
     var xhr = new XMLHttpRequest()
     xhr.onload = () => {
-      console.log('onload', xhr.status, xhr.statusText, xhr.responseType, xhr.response)
+      // console.log('onload', xhr.status, xhr.statusText, xhr.responseType, xhr.response)
       if (xhr.status === 201 /* created */) {
         var location = xhr.getResponseHeader('Location')
         resolve(location)

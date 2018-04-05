@@ -47,7 +47,7 @@ export default {
       myRe = /^[0-9]*$/g
       myArray = myRe.exec(val)
       if (myArray !== null && myArray.length > 0) {
-        this.recipe.recipe_id = 'allrecipes.com--' + val
+        this.recipe.recipe_id = val + '--allrecipes.com'
       } else {
         this.recipe.recipe_id = ''
       }
@@ -55,7 +55,6 @@ export default {
   },
   methods: {
     submit: function () {
-      console.log(this.recipe)
       if (this.recipe.recipe_id === '' && this.recipe.source_url === '') {
         this.errorMsg = 'You need to write recipe ID or URL!'
         this.$refs.error_msg.scrollIntoView()

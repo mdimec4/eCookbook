@@ -30,7 +30,7 @@ type allRecipesRecipe struct {
 }
 
 var (
-	idSplitRegex *regexp.Regexp = regexp.MustCompile("^allrecipes.com--([0-9]+)")
+	idSplitRegex *regexp.Regexp = regexp.MustCompile("^([0-9]+)--allrecipes.com$")
 )
 
 type allRecipesBackend struct {
@@ -61,7 +61,7 @@ func (arb allRecipesBackend) handleNewRecipe(recipe Recipe) (Recipe, error) {
 
 	allRecipesID := ""
 	// check if recipe.RecipeID maybe has
-	// allrecipes.com ID. We can use it, but it needs to be spleet from prefix first
+	// allrecipes.com ID. We can use it, but it needs to be split from suffix first
 	if recipe.RecipeID != "" {
 		parts := idSplitRegex.FindStringSubmatch(recipe.RecipeID)
 		if len(parts) >= 2 {
@@ -120,7 +120,7 @@ func (arb allRecipesBackend) handleNewRecipe(recipe Recipe) (Recipe, error) {
 
 	// translate to our recipe format
 	if recipe.RecipeID == "" {
-		recipe.RecipeID = allRecipesBackendName + "--" + arRecipe.RecipeID
+		recipe.RecipeID = arRecipe.RecipeID + "--" + allRecipesBackendName
 	}
 	recipe.Publisher = arRecipe.Author
 	recipe.SourceURL = arRecipe.SourceURL

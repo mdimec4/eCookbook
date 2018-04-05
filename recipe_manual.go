@@ -12,7 +12,7 @@ func (meb manualEntryBackend) handleNewRecipe(recipe Recipe) (Recipe, error) {
 		if err != nil {
 			return Recipe{}, err
 		}
-		recipe.RecipeID = manualEntryBackendName + "--" + id
+		recipe.RecipeID = id + "--" + manualEntryBackendName
 	}
 	if recipe.Backend == "" {
 		recipe.Backend = manualEntryBackendName
