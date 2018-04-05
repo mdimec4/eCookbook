@@ -8,7 +8,7 @@
       <div v-on:click="removeRecipe(recipe)" class="container-part"><icon style="color: red;" scale=1 name="remove"></icon></div>
     </div>
     <router-link  v-bind:to="{name: 'RecipeEditorNew'}"><button>Add New</button></router-link>
-    <router-link  v-bind:to="{name: 'AllRecipeNew'}"><button>Add New from allrecipes.com</button></router-link>
+    <router-link  v-bind:to="{name: 'AllRecipesNew'}"><button>Add New from allrecipes.com</button></router-link>
   </div>
 </template>
 

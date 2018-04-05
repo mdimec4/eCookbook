@@ -29,22 +29,6 @@ export default {
       backend: 'allrecipes.com',
       source_url: ''
     }
-    // there are basicly two options. Eather we are editing new recipe, or we are editing exiting recipe.
-    // If we are editing nre recipe, then 'id' param is not set and we will nt fetch exiting recipe from server.
-    var idParam = this.$route.params.id
-    if (!idParam || !(typeof idParam === 'string' || idParam instanceof String) || idParam === '') {
-      // we want to make UI user frendly so we will offer one
-      // empty ingredient/instruction/tip in advance
-      // if user will click subbmit and he/she didn't insert nthing into emty field
-      // created here, this wont be a problem. since submit will filter out
-      // empty fields anyway, before further processing
-      if (recipe.instructions.length === 0) {
-        recipe.instructions.push({instruction: ''})
-      }
-      if (recipe.tips.length === 0) {
-        recipe.tips.push('')
-      }
-    }
     return {
       indentifier: '',
       errorMsg: '',
@@ -53,37 +37,40 @@ export default {
   },
   watch: {
     indentifier: function (val) {
-          var myRe = /^https:\/\/www\.allrecipes\.com\/recipe\/.*/g
-          var myArray = myRe.exec(val)
-          if (myArray,length > 0) {
-               this.recipe.source_url = val
-               return
-          }
-          myRe = /^[0-9]*$/g
-          myArray = myRe.exec(val)
-          if (myArray,length > 0) {
-               this.recipe.recipe_id = val
-               return
-          }
+      var myRe = /^https:\/\/www\.allrecipes\.com\/recipe\/[0-9]*.*/g
+      var myArray = myRe.exec(val)
+      if (myArray !== null && myArray.length > 0) {
+        this.recipe.source_url = val
+      } else {
+        this.recipe.source_url = ''
+      }
+      myRe = /^[0-9]*$/g
+      myArray = myRe.exec(val)
+      if (myArray !== null && myArray.length > 0) {
+        this.recipe.recipe_id = val
+      } else {
+        this.recipe.recipe_id = ''
+      }
     }
   },
   methods: {
-        submit: function () { 
-                if (this.recipe.title === '') {
-                         this.errorMsg = 'You need to write recipe title!'
-                         this.$refs.error_msg.scrollIntoView()
-                        return
-                 }
-                 postOrPutRecipe('POST', this.recipe).then((location) => {
-                        this.errorMsg = ''
-                        console.log('recipe url: ', location)
-                        // redirect back to recipe menu
-                        this.$router.push({name: 'RecipeEditorList'})
-                }, (err) => {
-                        console.error('postOrPutRecipe promise: ', err)
-                        this.errorMsg = err
-                })
-        }
+    submit: function () {
+      console.log(this.recipe)
+      if (this.recipe.recipe_id === '' && this.recipe.source_url === '') {
+        this.errorMsg = 'You need to write recipe ID or URL!'
+        this.$refs.error_msg.scrollIntoView()
+        return
+      }
+      postOrPutRecipe('POST', this.recipe).then((location) => {
+        this.errorMsg = ''
+        console.log('recipe url: ', location)
+        // redirect back to recipe menu
+        this.$router.push({name: 'RecipeEditorList'})
+      }, (err) => {
+        console.error('postOrPutRecipe promise: ', err)
+        this.errorMsg = err
+      })
+    }
   }
 }
 
