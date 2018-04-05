@@ -7,11 +7,13 @@ type manualEntryBackend struct {
 
 // handleNewRecipe will create unique ID for recipe,
 func (meb manualEntryBackend) handleNewRecipe(recipe Recipe) (Recipe, error) {
-	id, err := uniqueRecipeID(recipe.Title)
-	if err != nil {
-		return Recipe{}, err
+	if recipe.RecipeID == "" {
+		id, err := uniqueRecipeID(recipe.Title)
+		if err != nil {
+			return Recipe{}, err
+		}
+		recipe.RecipeID = manualEntryBackendName + "--" + id
 	}
-	recipe.RecipeID = id
 	if recipe.Backend == "" {
 		recipe.Backend = manualEntryBackendName
 	}

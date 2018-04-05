@@ -90,29 +90,12 @@ type backend interface {
 	handleNewRecipe(recipe Recipe) (Recipe, error)
 }
 
-// findBackendFromRecipeID will parse recipeID to find the correct back-end
 func findBackend(recipe Recipe) backend {
 	// default to manualEntryBackendName for compatibility
 	// reasons, since old manual ID's didn't have "backend" entry
 	name := manualEntryBackendName
 	if recipe.Backend != "" {
 		name = recipe.Backend
-	}
-
-	if b, ok := backends[name]; ok {
-		return b
-	}
-	return nil
-}
-
-// findBackendFromRecipeID will parse recipeID to find the correct back-end
-func findBackendFromRecipeID(recipeID string) backend {
-	// default to manualEntryBackendName for compatibility
-	// reasons, since old manual ID's don't include
-	// back-end name with ':' as delimiter
-	name := manualEntryBackendName
-	if parts := strings.Split(recipeID, ":"); len(parts) > 1 {
-		name = parts[0]
 	}
 
 	if b, ok := backends[name]; ok {
@@ -177,7 +160,7 @@ func postNewRecipe(w http.ResponseWriter, r *http.Request) {
 
 	b := findBackend(recipe)
 	if b == nil {
-        http.Error(w, fmt.Sprintf("problem finding back-end named '%s': %s", recipe.Backend, err), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("problem finding back-end named '%s': %s", recipe.Backend, err), http.StatusInternalServerError)
 		return
 	}
 	recipe, err = b.handleNewRecipe(recipe)
@@ -203,11 +186,6 @@ func postNewRecipe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// prepped back-end name to ID. We might need to be able
-	// in the future to be able to figure out back-end from ID only.
-	if recipe.Backend != "" {
-		recipe.RecipeID = recipe.Backend + ":" + recipe.RecipeID
-	}
 	err = db.CreateRecipe(recipe)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

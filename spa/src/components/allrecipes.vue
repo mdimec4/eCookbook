@@ -37,7 +37,7 @@ export default {
   },
   watch: {
     indentifier: function (val) {
-      var myRe = /^https:\/\/www\.allrecipes\.com\/recipe\/[0-9]*.*/g
+      var myRe = /^https:\/\/www\.allrecipes\.com\/recipe\/[0-9]+.*/g
       var myArray = myRe.exec(val)
       if (myArray !== null && myArray.length > 0) {
         this.recipe.source_url = val
@@ -47,7 +47,7 @@ export default {
       myRe = /^[0-9]*$/g
       myArray = myRe.exec(val)
       if (myArray !== null && myArray.length > 0) {
-        this.recipe.recipe_id = val
+        this.recipe.recipe_id = 'allrecipes.com--' + val
       } else {
         this.recipe.recipe_id = ''
       }

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"path"
+	"regexp"
 	"strings"
 )
 
@@ -27,6 +28,10 @@ type allRecipesRecipe struct {
 	Directions  []string `json:"directions"`
 	Footnotes   []string `json:"footnotes"`
 }
+
+var (
+	idSplitRegex *regexp.Regexp = regexp.MustCompile("^allrecipes.com--([0-9]+)")
+)
 
 type allRecipesBackend struct {
 	// relies on all allrecipes.com parsing HTTP midleware
@@ -54,7 +59,17 @@ func (arb allRecipesBackend) handleNewRecipe(recipe Recipe) (Recipe, error) {
 		recipe.Backend = allRecipesBackendName
 	}
 
-	if recipe.RecipeID == "" && recipe.SourceURL != "" {
+	allRecipesID := ""
+	// check if recipe.RecipeID maybe has
+	// allrecipes.com ID. We can use it, but it needs to be spleet from prefix first
+	if recipe.RecipeID != "" {
+		parts := idSplitRegex.FindStringSubmatch(recipe.RecipeID)
+		if len(parts) >= 2 {
+			allRecipesID = parts[1]
+		}
+
+	}
+	if allRecipesID == "" && recipe.SourceURL != "" {
 		// get recipe ID from allrecipes.com url
 		allRecipesURL, err := url.Parse(recipe.SourceURL)
 		if err != nil {
@@ -75,10 +90,10 @@ func (arb allRecipesBackend) handleNewRecipe(recipe Recipe) (Recipe, error) {
 		if len(parts) < 2 {
 			return Recipe{}, fmt.Errorf("failed to get ID from allrecipes.com URL: %s", recipe.SourceURL)
 		}
-		recipe.RecipeID = parts[1]
+		allRecipesID = parts[1]
 	}
 
-	if recipe.RecipeID == "" {
+	if allRecipesID == "" {
 		return Recipe{}, errRecipeIDNotSet
 	}
 
@@ -87,7 +102,7 @@ func (arb allRecipesBackend) handleNewRecipe(recipe Recipe) (Recipe, error) {
 	if err != nil {
 		return Recipe{}, fmt.Errorf("parse allrecipes.com middle-ware url %s", err)
 	}
-	u.Path = path.Join("api", "recipe", recipe.RecipeID)
+	u.Path = path.Join("api", "recipe", allRecipesID)
 
 	// parse html
 	resp, err := http.Get(u.String())
@@ -105,7 +120,7 @@ func (arb allRecipesBackend) handleNewRecipe(recipe Recipe) (Recipe, error) {
 
 	// translate to our recipe format
 	if recipe.RecipeID == "" {
-		recipe.RecipeID = arRecipe.RecipeID
+		recipe.RecipeID = allRecipesBackendName + "--" + arRecipe.RecipeID
 	}
 	recipe.Publisher = arRecipe.Author
 	recipe.SourceURL = arRecipe.SourceURL
