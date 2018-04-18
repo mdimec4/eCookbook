@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 	"path"
 	"regexp"
 	"strings"
@@ -111,7 +113,11 @@ func (arb allRecipesBackend) handleNewRecipe(recipe Recipe) (Recipe, error) {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK /*200*/ {
-		return Recipe{}, fmt.Errorf("allrecipes.com middle-ware responded with: %s", resp.Status)
+		b, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error reading  allrecipes.com middle-ware non 200 response: %s\n", err)
+		}
+		return Recipe{}, fmt.Errorf("allrecipes.com middle-ware responded with: Status: %s, Body: s", resp.Status, string(b))
 	}
 	err = json.NewDecoder(resp.Body).Decode(&arRecipe)
 	if err != nil {
