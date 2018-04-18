@@ -33,11 +33,15 @@ export default {
       console.log('mounted - $nextTick')
       this.renderScrollPosition()
     })
-    getRecipes().then((recipes) => {
-      this.recipes = recipes
-    }, (err) => {
-      console.error('getRecipes promise: ', err)
-    })
+    var updateRecipes = () => {
+      getRecipes().then((recipes) => {
+        this.recipes = recipes
+      }, (err) => {
+        console.error('getRecipes promise: ', err)
+      })
+    }
+    updateRecipes()
+    setInterval(updateRecipes, 30000)
   },
   updated () { // bug use computed of watcher instead. updated doc says so
     console.log('updated')
