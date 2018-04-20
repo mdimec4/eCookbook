@@ -29,3 +29,4 @@ docker run -d --restart=always -e POSTGRES_PASSWORD=chef -e POSTGRES_USER=chef -
 docker run -d --restart=always -e CHEF_DB_HOST=db2_1 -p 4006:4006 --link eCookbook_postgres:db2_1 --name eCookbook mihad/ecookbook
 ```
 
+Pre build docker image is also avaliable on [dockerhub](https://hub.docker.com/r/mihad/ecookbook/]), but it is not neceserily up to date.
